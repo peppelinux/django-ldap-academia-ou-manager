@@ -1,13 +1,23 @@
-LDAP django admin manager for Academia OU
+Django admin LDAP manager for Academia OU
 -----------------------------------------
-A custom way to manage Academia User according to eduPerson schema and
+A custom way to manage Academia Users according to eduPerson schema and
 SCHAC (SCHema for ACademia).
 
 References
 ----------
 
-- [eduPerson Schema  ] (https://software.internet2.edu/eduperson/internet2-mace-dir-eduperson-201602.html)
+- [OpenLDAP configuration] (https://github.com/peppelinux/ansible-slapd-eduperson2016)
+- [eduPerson Schema] (https://software.internet2.edu/eduperson/internet2-mace-dir-eduperson-201602.html)
 - [SCHAC] (https://wiki.refeds.org/display/STAN/SCHAC)
+
+Requirements
+------------
+
+- Django 2.x
+- Python 3.x
+- OpenLDAP
+
+Tested on Debian9.
 
 Preview
 -------
@@ -18,7 +28,7 @@ Preview
 Setup examples
 --------------
 
-#### Create environment dir and activate it
+#### Create an environment directory and activate environment
 ````
 apt install python3-dev python3-pip python3-setuptools
 pip3 install virtualenv
@@ -37,7 +47,7 @@ cd $PROJ_NAME
 ````
 
 #### Install the app
-Illustrates a quite raw approach for dev users.
+This is a quite raw approach for dev users.
 Soon as possibile there will be a setup.py for automated install.
 ````
 git clone https://github.com/peppelinux/django-ldap-academia-ou-manager.git
@@ -46,8 +56,8 @@ pip install -r django-ldap-academia-ou-manager/requirements
 ````
 
 #### Edit settings with DB
-View settings.py and settingslocal.py in example folder.
-After setting up the Django projhect with an SQL DB, apply the
+Read settings.py and settingslocal.py in the example folder.
+After setting up the Django project with a SQL DB, then apply the
 fakes migrations for LDAP:
 ````
 ./manage.py migrate ldap_peoples 0006 --fake
@@ -55,7 +65,7 @@ fakes migrations for LDAP:
 
 Using the Object Relation Mapper
 --------------------------------
-One of the advantage of using the ORM is the possibility to make these kind of queries
+One of the advantage of using the ORM is the possibility to make these kind of action
 to a LDAP database.
 
 #### User update attributes
@@ -65,6 +75,13 @@ lu = LdapAcademiaUser.objects.get(uid='mario')
 
 # as multivalue
 lu.eduPersonAffiliation.append('alumn')
+lu.save()
+
+lu.set_password('secr3tP4ss20rd')
+
+# search into multivalue field
+other_lus = LdapAcademiaUser.objects.filter(mail_contains='unical')
+
 ````
 
 #### User creation example

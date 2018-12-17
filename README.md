@@ -9,10 +9,16 @@ References
 - [eduPerson Schema  ] (https://software.internet2.edu/eduperson/internet2-mace-dir-eduperson-201602.html)
 - [SCHAC] (https://wiki.refeds.org/display/STAN/SCHAC)
 
-SETUP
------
+Preview
+-------
 
-#### create environment dir and activate it
+![Alt text](img/search.png)
+![Alt text](img/preview.png)
+
+Setup examples
+--------------
+
+#### Create environment dir and activate it
 ````
 apt install python3-dev python3-pip python3-setuptools
 pip3 install virtualenv
@@ -23,16 +29,16 @@ source $dest_dir/bin/activate
 pip install django
 ````
 
-#### create a project
+#### Create a project
 ````
 PROJ_NAME=django-ldap-academia-ou-manager
 django-admin startproject $PROJ_NAME
 cd $PROJ_NAME
 ````
 
-#### install the app
-These illustrates a quite raw approach only good for developers.
-Soon as possibile there will be a setup.py for automated install
+#### Install the app
+Illustrates a quite raw approach for dev users.
+Soon as possibile there will be a setup.py for automated install.
 ````
 git clone https://github.com/peppelinux/django-ldap-academia-ou-manager.git
 ln -s django-ldap-academia-ou-manager/ldap_peoples .
@@ -47,9 +53,9 @@ fakes migrations for LDAP:
 ./manage.py migrate ldap_peoples 0006 --fake
 ````
 
-USING THE ORM
--------------
-One of the advantage of using the ORM is the ability to produce these kind of queries
+Using the Object Relation Mapper
+--------------------------------
+One of the advantage of using the ORM is the possibility to make these kind of queries
 to a LDAP database.
 
 #### User update attributes

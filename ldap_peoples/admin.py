@@ -13,8 +13,6 @@ from .forms import LdapAcademiaUserAdminForm, LdapGroupAdminMultiValuedForm #, F
 from .hash_functions import encode_secret
 from .models import *
 
-from pprint import pprint
-
 
 @admin.register(LogEntry)
 class LogEntryAdmin(ReadOnlyAdmin):
@@ -200,8 +198,6 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         if form.data.get('new_passwd'):
             passw = form.data.get('new_passwd')
             obj.set_password(passw)
-            # obj.set_password_custom(form.data.get('new_passwd'),
-                                    # form.data['password_encoding'])
 
 
 @admin.register(LdapGroup)

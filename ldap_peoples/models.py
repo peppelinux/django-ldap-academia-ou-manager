@@ -379,10 +379,11 @@ class LdapAcademiaUser(ldapdb.models.Model):
     
     def save(self, *args, **kwargs):
         for field in settings.READONLY_FIELDS:
-            try:
-                del self.__dict__[field]
-            except:
-                print('error on deletion {} readonly field'.format(field))
+            if hasattr(self, field):
+                try:
+                    del self.__dict__[field]
+                except:
+                    print('error on deletion {} readonly field'.format(field))
         super().save(*args, **kwargs)
 
     def __str__(self):

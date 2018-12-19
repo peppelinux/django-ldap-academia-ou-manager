@@ -103,3 +103,6 @@ AFFILIATION = (
                 ('employee', 'employee'),
                 ('library-walk-in', 'library-walk-in'),
               )
+
+# this option deactive previous auth sessions when a new auth occours
+MULTIPLE_USER_AUTH_SESSIONS = False

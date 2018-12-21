@@ -58,8 +58,6 @@ class LdapAcademiaAuthBackend(ModelBackend):
                                        first_name=lu.cn,
                                        last_name=lu.sn)
 
-        
-        
         # disconnect already created session, only a session per user is allowed
         # get all the active sessions
         if not settings.MULTIPLE_USER_AUTH_SESSIONS:
@@ -74,8 +72,11 @@ class LdapAcademiaAuthBackend(ModelBackend):
         # works only if this field is active in account model (need to be customized first!)
         if hasattr(user, 'access_notification'):
             if user.access_notification:
+                d = {'time': timezone.localtime(),
+                     'user': lu.uid,
+                     'hostname': settings.HOSTNAME}
                 send_mail(_('Access notification'),
-                              _('Access notification occurred at: {}'.format(timezone.localtime())),
+                              settings.IDENTITY_MSG_ACCESS.format(**d),
                               settings.DEFAULT_FROM_EMAIL,
                               lu.mail, # it's a list :)
                               fail_silently=True,

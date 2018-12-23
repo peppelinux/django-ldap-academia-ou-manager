@@ -63,8 +63,11 @@ cd $PROJ_NAME
 ````
 
 #### Install the app
+**Note:** It uses a django-ldapdb fork to handle readonly (non editable) fields. This still waiting form merge in official django-ldap repository.
+
 ````
-pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager
+# pip3 install git+https://github.com/peppelinux/django-ldapdb.git
+pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager --process-dependency-link
 ````
 
 #### Edit settings.py
@@ -141,6 +144,7 @@ TODO
  - Some Unit tests will be also good!
  - ListFields doesn't handle properly **verbose_name**. It depends on the form class;
  - form .clean methods could be cleaned with a better OOP refactor on FormFields and Widgets;
+ - import json format: must handle deserialization on DateTime/TimeStamps fileds like ('schacDateOfBirth', '2018-12-30') and ('schacExpiryDate', '20181231022317Z');
  
  **Django-ldapdb related**
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;

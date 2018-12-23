@@ -21,12 +21,13 @@ setup(name='django-ldap-academia-ou-manager',
       author_email='giuseppe.demarco@unical.it',
       license='BSD',
       packages=['ldap_peoples'],
+      dependency_links=['https://github.com/peppelinux/django-ldapdb/tarball/master#egg=peppelinux_django_ldapdb-1.0',],
       install_requires=[
                       'bcrypt>=3.1.4',
                       'Django>=2.0.7',
                       'django-admin-rangefilter>=0.3.9',
                       'passlib>=1.7.1',
                       'chardet',
+                      'peppelinux_django_ldapdb==1.0',
                   ],
-      dependency_links=['git+https://github.com/peppelinux/django-ldapdb.git']
      )

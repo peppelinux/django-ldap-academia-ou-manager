@@ -11,4 +11,3 @@ git+https://github.com/peppelinux/django-ldapdb.git
 git+https://github.com/silentsokolov/django-admin-rangefilter.git
 
 chardet
-pycountry

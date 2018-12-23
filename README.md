@@ -1,6 +1,6 @@
 Django admin LDAP manager for Academia OU
 -----------------------------------------
-A custom way to manage Academia Users according to eduPerson schema and
+Django Admin manager for Academia Users with eduPerson schema and
 SCHAC (SCHema for ACademia).
 
 References
@@ -13,9 +13,11 @@ References
 Requirements
 ------------
 
-- Django 2.x
+- OpenLDAP 2.4.x
 - Python 3.x
-- OpenLDAP
+- Django 2.x
+- django-ldapdb (custom repository)
+
 
 Tested on Debian9.
 

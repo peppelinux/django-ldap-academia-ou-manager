@@ -146,25 +146,20 @@ class LdapMultiValuedForm(forms.ModelForm):
         # pprint(self.__dict__)
         data = copy(self.data)
         for field in self.fields:
-
             if isinstance(self.fields[field].widget, SchacPersonalUniqueCodeWidget):
                 data[field] = self.clean_MultiValueWidget(field, data,
                                                           settings.SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX,
                                                           2)
-            
             elif isinstance(self.fields[field].widget, SchacHomeOrganizationTypeWidget):
                 data[field] = self.clean_MultiValueWidget(field, data,
                                                           settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX,
                                                           2)
-
             elif isinstance(self.fields[field].widget, eduPersonScopedAffiliationWidget):
                 data[field] = self.clean_MultiValueWidget(field, data,
                                                           None, 2, sep='')
-
             elif isinstance(self.fields[field].widget, eduPersonAffiliationWidget):
                 data[field] = self.clean_MultiValueWidget(field, data,
                                                           None, 1)
-
             elif isinstance(self.fields[field].widget, SchacPersonalUniqueIdWidget):
                 data[field] = self.clean_MultiValueWidget(field, data,
                                                           settings.SCHAC_PERSONALUNIQUEID_DEFAULT_PREFIX,
@@ -172,22 +167,18 @@ class LdapMultiValuedForm(forms.ModelForm):
                 # clean error manually
                 if self._errors.get(field):
                     del(self._errors[field])
-            
             elif isinstance(self.fields[field].widget, SplitJSONWidget):
                 data[field] = self.clean_ListField(field, data)
-    
             elif field == 'schacDateOfBirth':
                 # per generalizzare questo agire nel metodo to_python del field
                 if not data[field]:
                     data[field] = None
                     continue
                 data[field] = datetime.datetime.strptime(data[field], settings.DATE_FORMAT) 
-            
             elif field == 'schacExpiryDate':
                 data[field] = self.clean_schacExpiryDate()
-
             elif field == 'eduPersonPrincipalName':
-                if not re.match('[a-zA-Z]+@[a-zA-Z]+', data[field]):
+                if not re.match(settings.EEPN_VALIDATOR, data[field]):
                     msg = _('{} is not valid: please use "value@scope"')
                     self.add_error(field,  msg.format(data[field]))
 

@@ -39,10 +39,14 @@ class LdapMultiValuedForm(forms.ModelForm):
         https://docs.djangoproject.com/en/2.1/ref/forms/validation/ 
         """
         datestr = ' '.join((self.data['schacExpiryDate_0'], self.data['schacExpiryDate_1']))
-        try:
-            value = datetime.datetime.strptime(datestr, settings.DATETIME_FORMAT)
-        except:
-            return
+        value = None
+        for date_format in settings.DATETIME_INPUT_FORMATS:
+            try:
+                value = datetime.datetime.strptime(datestr, date_format)
+            except Exception as e:
+                # print(e)
+                pass
+        if not value: return
         value = timezone.make_aware(value, timezone.pytz.utc)
         self.cleaned_data['schacExpiryDate'] = value
         return self.cleaned_data['schacExpiryDate']
@@ -174,7 +178,18 @@ class LdapMultiValuedForm(forms.ModelForm):
                 if not data[field]:
                     data[field] = None
                     continue
-                data[field] = datetime.datetime.strptime(data[field], settings.DATE_FORMAT) 
+                for date_format in settings.DATE_INPUT_FORMATS:
+                    date_in = None
+                    try:
+                        date_in = datetime.datetime.strptime(data[field], date_format)
+                    except Exception as e: 
+                        # print(date_format, e)
+                        pass
+                    if date_in:
+                        data[field] = date_in
+                        break
+                    # print(data[field])
+            
             elif field == 'schacExpiryDate':
                 data[field] = self.clean_schacExpiryDate()
             elif field == 'eduPersonPrincipalName':

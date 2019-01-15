@@ -126,8 +126,12 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+# shacExpiryDate e shacDateOfBirth validation works on these:
 DATE_FORMAT = "%d/%m/%Y"
 DATETIME_FORMAT = "{} %H:%M:%S".format(DATE_FORMAT)
+
+DATE_INPUT_FORMATS = [DATE_FORMAT, "%Y-%m-%d"]
+DATETIME_INPUT_FORMATS = ["{} %H:%M:%S".format(i) for i in DATE_INPUT_FORMATS]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/

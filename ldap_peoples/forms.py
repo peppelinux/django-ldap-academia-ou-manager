@@ -44,7 +44,7 @@ class LdapMultiValuedForm(forms.ModelForm):
             try:
                 value = datetime.datetime.strptime(datestr, date_format)
             except Exception as e:
-                # print(e)
+                print(e)
                 pass
         if not value: return
         value = timezone.make_aware(value, timezone.pytz.utc)

@@ -22,12 +22,98 @@ from . widgets import (SplitJSONWidget,
                        SchacHomeOrganizationTypeWidget)
 from pprint import pprint
 
-#from django.utils.dateparse import (
-    #parse_date, parse_datetime, parse_duration, parse_time,
-#)
 
 class LdapMultiValuedForm(forms.ModelForm):
-    
+
+    def clean_ListField(self, field, data):
+        # TODO run regexp validator here or add validators=[] in model field
+        regexp = '{}\[\d+\]'.format(field)
+        value_list = []
+        for key in data:
+            if re.match(regexp, key):
+                value_list.append(self.data[key])
+                if isinstance(self.fields[field], EmailListField):
+                    try:
+                        validators.validate_email(self.data[key])
+                    except:
+                        # TODO: sarebbe meglio fare to_python eppoi...
+                        # print("Manage exception here: {} {}".format(field, self.data[key]))
+                        msg = _('{} is not a valid email format!')
+                        self.add_error(field,  msg.format(self.data[key]))
+                elif isinstance(self.fields[field], ScopedListField):
+                    if not re.match('[a-zA-Z]+@[a-zA-Z]+', self.data[key]):
+                        msg = _('{} is not valid: please use "value@scope"')
+                        self.add_error(field,  msg.format(self.data[key]))
+        return value_list
+
+    @cached_property
+    def changed_data(self):
+        data = []
+        for name, field in self.fields.items():
+            prefixed_name = self.add_prefix(name)
+            data_value = field.widget.value_from_datadict(self.data, self.files, prefixed_name)
+            if not field.show_hidden_initial:
+                # Use the BoundField's initial as this is the value passed to
+                # the widget.
+                initial_value = self[name].initial
+            else:
+                initial_prefixed_name = self.add_initial_prefix(name)
+                hidden_widget = field.hidden_widget()
+                try:
+                    initial_value = field.to_python(hidden_widget.value_from_datadict(
+                                                    self.data, self.files, initial_prefixed_name))
+                except ValidationError:
+                    # Always assume data has changed if validation fails.
+                    data.append(name)
+                    continue
+            if field.has_changed(initial_value, data_value):
+                data.append(name)
+        return data
+
+
+class LdapUserAdminPasswordBaseForm(forms.Form):
+    _min_len_help_text = 'The secret must at least {} digits, '.format(settings.PPOLICY_PASSWD_MIN_LEN)
+    _extended_help_text = ('contains lowercase'
+                           ' and uppercase characters, '
+                           ' number and at least one of these symbols:'
+                           '! % - _ + = [ ] { } : , . ? < > ( ) ; ')
+    _secret_help_text = _min_len_help_text + _extended_help_text
+
+    # custom field not backed by database
+    new_passwd = forms.CharField(label=_('New password'),
+                                required=False,
+                                min_length=settings.PPOLICY_PASSWD_MIN_LEN,
+                                max_length=settings.PPOLICY_PASSWD_MAX_LEN,
+                                widget=forms.PasswordInput(),
+                                help_text=_secret_help_text)
+
+    def clean_new_passwd(self):
+        if not self.data['new_passwd']:
+            return None
+        for regexp in settings.SECRET_FIELD_VALIDATORS.values():
+            found = re.findall(regexp, self.data['new_passwd'])
+            if not found:
+                raise ValidationError(self._secret_help_text)
+        return self.cleaned_data['new_passwd']
+
+
+class LdapUserAdminPasswordForm(LdapUserAdminPasswordBaseForm):
+    password_encoding = forms.ChoiceField(choices=[(i,i) for i in settings.SECRET_PASSWD_TYPE\
+                                                   if i not in settings.DISABLED_SECRET_TYPES],
+                                          required=False,
+                                          initial=settings.DEFAULT_SECRET_TYPE)
+
+    def clean_attribute(self):
+        if self.data['attribute'] not in settings.DISABLED_SECRET_TYPES:
+            return self.cleaned_data['attribute']
+
+
+class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseForm):
+    # define your customization here
+    # schacPersonalUniqueID = forms.CharField(required=False, widget=SchacPersonalUniqueIdWidget)
+    pass
+
+
     def clean_schacExpiryDate(self):
         """
         This kind of field need a better generalization
@@ -121,30 +207,9 @@ class LdapMultiValuedForm(forms.ModelForm):
                 # print(field_dict[item], cnt, field_group, value_list)
         return value_list
 
-    def clean_ListField(self, field, data):
-        # TODO run regexp validator here or add validators=[] in model field
-        regexp = '{}\[\d+\]'.format(field)
-        value_list = []
-        for key in data:
-            if re.match(regexp, key):
-                value_list.append(self.data[key])
-                if isinstance(self.fields[field], EmailListField):
-                    try:
-                        validators.validate_email(self.data[key])
-                    except:
-                        # TODO: sarebbe meglio fare to_python eppoi...
-                        # print("Manage exception here: {} {}".format(field, self.data[key]))
-                        msg = _('{} is not a valid email format!')
-                        self.add_error(field,  msg.format(self.data[key]))
-                elif isinstance(self.fields[field], ScopedListField):
-                    if not re.match('[a-zA-Z]+@[a-zA-Z]+', self.data[key]):
-                        msg = _('{} is not valid: please use "value@scope"')
-                        self.add_error(field,  msg.format(self.data[key]))
-        return value_list
-
     def clean(self):
         """
-        Auto Detect for any ListField widget
+        Detect for any ListField widget
         """
         #super().clean()
         # pprint(self.__dict__)
@@ -200,74 +265,18 @@ class LdapMultiValuedForm(forms.ModelForm):
         self.data = data
         return data
 
-    @cached_property
-    def changed_data(self):
-        data = []
-        for name, field in self.fields.items():
-            prefixed_name = self.add_prefix(name)
-            data_value = field.widget.value_from_datadict(self.data, self.files, prefixed_name)
-            if not field.show_hidden_initial:
-                # Use the BoundField's initial as this is the value passed to
-                # the widget.
-                initial_value = self[name].initial
-            else:
-                initial_prefixed_name = self.add_initial_prefix(name)
-                hidden_widget = field.hidden_widget()
-                try:
-                    initial_value = field.to_python(hidden_widget.value_from_datadict(
-                                                    self.data, self.files, initial_prefixed_name))
-                except ValidationError:
-                    # Always assume data has changed if validation fails.
-                    data.append(name)
-                    continue
-            if field.has_changed(initial_value, data_value):
-                data.append(name)
-        return data
-
-
-class LdapUserAdminPasswordBaseForm(forms.Form):
-    _min_len_help_text = 'The secret must at least {} digits, '.format(settings.PPOLICY_PASSWD_MIN_LEN)
-    _extended_help_text = ('contains lowercase'
-                           ' and uppercase characters, '
-                           ' number and at least one of these symbols:'
-                           '! % - _ + = [ ] { } : , . ? < > ( ) ; ')
-    _secret_help_text = _min_len_help_text + _extended_help_text
-
-    # custom field not backed by database
-    new_passwd = forms.CharField(label=_('New password'),
-                                required=False,
-                                min_length=settings.PPOLICY_PASSWD_MIN_LEN,
-                                max_length=settings.PPOLICY_PASSWD_MAX_LEN,
-                                widget=forms.PasswordInput(),
-                                help_text=_secret_help_text)
-
-    def clean_new_passwd(self):
-        if not self.data['new_passwd']:
-            return None
-        for regexp in settings.SECRET_FIELD_VALIDATORS.values():
-            found = re.findall(regexp, self.data['new_passwd'])
-            if not found:
-                raise ValidationError(self._secret_help_text)
-        return self.cleaned_data['new_passwd']
-
-
-class LdapUserAdminPasswordForm(LdapUserAdminPasswordBaseForm):
-    password_encoding = forms.ChoiceField(choices=[(i,i) for i in settings.SECRET_PASSWD_TYPE\
-                                                   if i not in settings.DISABLED_SECRET_TYPES],
-                                          required=False,
-                                          initial=settings.DEFAULT_SECRET_TYPE)
-
-    def clean_attribute(self):
-        if self.data['attribute'] not in settings.DISABLED_SECRET_TYPES:
-            return self.cleaned_data['attribute']
-
-
-class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseForm):
-    # define your customization here
-    # schacPersonalUniqueID = forms.CharField(required=False, widget=SchacPersonalUniqueIdWidget)
-    pass
-
 
 class LdapGroupAdminMultiValuedForm(LdapMultiValuedForm):
     # define your customization here
-    pass
+    def clean(self):
+        data = copy(self.data)
+        for field in self.fields:
+            if isinstance(self.fields[field].widget, SplitJSONWidget):
+                data[field] = self.clean_ListField(field, data)
+                print(field, data[field])
+                # TODO: regex validation here:
+                # clean error manually
+                if self._errors.get(field):
+                    del(self._errors[field])
+        self.data = data
+        return data

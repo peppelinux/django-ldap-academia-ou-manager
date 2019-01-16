@@ -145,6 +145,30 @@ TODO
  - ListFields doesn't handle properly **verbose_name**. It depends on the form class;
  - form .clean methods could be cleaned with a better OOP refactor on FormFields and Widgets;
  - import json format: must handle deserialization on DateTime/TimeStamps fileds like ('schacDateOfBirth', '2018-12-30') and ('schacExpiryDate', '20181231022317Z');
+ - too many connection from django-ldapdb backends, there will be a dev branch with this:
+ 
+````
+# backeds.ldap.base#237
+    def ensure_connection(self):
+        super(DatabaseWrapper, self).ensure_connection()
+        
+        # Do a test bind, which will revive the connection if interrupted, or reconnect
+        conn_params = self.get_connection_params()
+        
+        # this creates too many connections to LDAP server!
+        # try:
+            # self.connection.simple_bind_s(
+                # conn_params['bind_dn'],
+                # conn_params['bind_pw'],
+            # )
+            # print('ensure_connection. try')
+        # except ldap.SERVER_DOWN:
+        
+        if not self.connection:
+            self.connect()
+            # print('ensure_connection. except')
+````
+ 
  
  **Django-ldapdb related**
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;

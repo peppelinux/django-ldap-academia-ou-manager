@@ -1,7 +1,6 @@
 Django admin LDAP manager for Academia OU
 -----------------------------------------
 Django Admin manager for Academia Users with eduPerson, SCHAC (SCHema for ACademia) and Samba schema.
-
 It also needs PPolicy overlay.
 
 References
@@ -20,7 +19,7 @@ Requirements
 - django-ldapdb (custom repository)
 
 
-Tested on Debian9.
+Tested on Debian9 and Debian 10.
 
 Preview
 -------
@@ -49,15 +48,15 @@ Setup
 apt install python3-dev python3-pip python3-setuptools
 pip3 install virtualenv
 
-export dest_dir=django-ldap-academia-ou-manager.env
-virtualenv -p python3 $dest_dir
+export PROJ_NAME=django-ldap-academia-ou-manager
+export DEST_DIR=$PROJ_NAME.env
+virtualenv -p python3 $DEST_DIR
 source $dest_dir/bin/activate
 pip3 install django
 ````
 
 #### Create a project
 ````
-PROJ_NAME=django-ldap-academia-ou-manager
 django-admin startproject $PROJ_NAME
 cd $PROJ_NAME
 ````
@@ -73,14 +72,19 @@ pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager -
 #### Edit settings.py
 Read settings.py and settingslocal.py in the example folder.
 
-In settings.py: Add **ldap_peoples** in INSTALLED_APPS.
-In settings.py: import default ldap_peoples settings as follows.
+In settings.py do the following:
+
+- Add **ldap_peoples** in INSTALLED_APPS;
+- import default ldap_peoples settings as follows;
+- import default app url as follows;
+
+#### import default ldap_peoples settings
 ````
 # settings.py
 if 'ldap_peoples' in INSTALLED_APPS:
     from ldap_peoples.settings import *
 ````
-In urls.py import ldap_peoples urls:
+#### import default app url
 ````
 # urls.py
 if 'ldap_peoples' in settings.INSTALLED_APPS:
@@ -140,12 +144,17 @@ u.delete()
 
 TODO
 ----
- - We use custom django-ldapdb fork because readonly fields like createTimestamps and other are fautly on save in the official django-ldapdb repo. [See related PR](https://github.com/django-ldapdb/django-ldapdb/pull/185)
  - Some Unit tests will be also good!
- - ListFields doesn't handle properly **verbose_name**. It depends on the form class;
  - form .clean methods could be cleaned with a better OOP refactor on FormFields and Widgets;
  - import json format: must handle deserialization on DateTime/TimeStamps fileds like ('schacDateOfBirth', '2018-12-30') and ('schacExpiryDate', '20181231022317Z');
- - too many connection from django-ldapdb backends, there will be a dev branch with this:
+
+ 
+ 
+ **Django-ldapdb related**
+ - We use custom django-ldapdb fork because readonly fields like createTimestamps and other are fautly on save in the official django-ldapdb repo. [See related PR](https://github.com/django-ldapdb/django-ldapdb/pull/185);
+ - ListFields doesn't handle properly **verbose_name**. It depends on the form class;
+ - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;
+ - too many connection from django-ldapdb backends, fixed in forked django-ldapdb version as follow:
  
 ````
 # backeds.ldap.base#237
@@ -168,7 +177,3 @@ TODO
             self.connect()
             # print('ensure_connection. except')
 ````
- 
- 
- **Django-ldapdb related**
- - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;

@@ -1,5 +1,11 @@
+from django.conf import settings
+from collections import OrderedDict
+
+from . ldap_utils import (format_generalized_time,
+                          export_entry_to_ldiff,
+                          export_entry_to_json)
+
 class LdapSerializer(object):
-    
     def serialize(self, elements_as_list = False, encoding=None):
         d = OrderedDict()
         if self.object_classes:
@@ -13,7 +19,7 @@ class LdapSerializer(object):
             if ele.attname in settings.READONLY_FIELDS: continue
             value = getattr(self, ele.attname)
             if not value: continue
-            
+
             # TODO better code here!
             if isinstance(value, list):
                 if encoding:
@@ -33,10 +39,9 @@ class LdapSerializer(object):
                     d[ele.attname] = ele.value_to_string(self).encode(encoding)
                 else:
                     d[ele.attname] = ele.value_to_string(self)
-            
+
             if elements_as_list and not isinstance(value, list):
                 d[ele.attname] = [d[ele.attname]]
-            
         return d
 
     def ldiff(self):

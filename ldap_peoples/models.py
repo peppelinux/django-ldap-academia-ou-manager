@@ -2,7 +2,6 @@ import ldap
 import ldapdb.models
 import os
 
-from collections import OrderedDict
 from django.conf import settings
 from django.db import connections
 from django.db.models import fields
@@ -19,9 +18,6 @@ from ldapdb.models.fields import (CharField,
 from .hash_functions import encode_secret
 from . ldap_utils import (parse_generalized_time,
                           parse_pwdfailure_time,
-                          export_entry_to_ldiff,
-                          export_entry_to_json,
-                          format_generalized_time,
                           get_expiration_date)
 from . model_fields import (TimeStampField,
                             MultiValueField,
@@ -33,7 +29,7 @@ from . model_fields import (TimeStampField,
                             eduPersonAffiliationListField,
                             eduPersonScopedAffiliationListField,
                             SchacHomeOrganizationTypeListField)
-
+from . serializers import LdapSerializer
 
 class LdapGroup(ldapdb.models.Model):
     """
@@ -79,7 +75,7 @@ class LdapGroup(ldapdb.models.Model):
         return self.cn
 
 
-class LdapAcademiaUser(ldapdb.models.Model):
+class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     """
     Class for representing an LDAP user entry.
     """
@@ -278,7 +274,6 @@ class LdapAcademiaUser(ldapdb.models.Model):
 
     def set_schacHomeOrganizationType(self, value,
                                       country_code=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE):
-
         if settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX not in value:
             unique_id = ':'.join((settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX,
                                   country_code,
@@ -304,53 +299,6 @@ class LdapAcademiaUser(ldapdb.models.Model):
         if membership:
             # return os.linesep.join([m.dn for m in membership])
             return [i.cn for i in membership]
-
-    def serialize(self, elements_as_list = False, encoding=None):
-        d = OrderedDict()
-        if self.object_classes:
-            d['objectclass'] = []
-            for i in self.object_classes:
-                if encoding:
-                    d['objectclass'].append(i.encode(encoding))
-                else:
-                    d['objectclass'].append(i)
-        for ele in self._meta.get_fields():
-            if ele.attname in settings.READONLY_FIELDS: continue
-            value = getattr(self, ele.attname)
-            if not value: continue
-
-            # TODO better code here!
-            if isinstance(value, list):
-                if encoding:
-                    d[ele.attname] = [i.encode(encoding) for i in value]
-                else:
-                    d[ele.attname] = [i for i in value]
-            elif ele.attname in ('schacExpiryDate',):
-                d[ele.attname] = format_generalized_time(value)
-                if encoding:
-                    d[ele.attname] = d[ele.attname].encode(encoding)
-            elif ele.attname in ('schacDateOfBirth',):
-                d[ele.attname] = value.strftime(settings.SCHAC_DATEOFBIRTH_FORMAT)
-                if encoding:
-                    d[ele.attname] = d[ele.attname].encode(encoding)
-            else:
-                if encoding:
-                    d[ele.attname] = ele.value_to_string(self).encode(encoding)
-                else:
-                    d[ele.attname] = ele.value_to_string(self)
-
-            if elements_as_list and not isinstance(value, list):
-                d[ele.attname] = [d[ele.attname]]
-
-        return d
-
-    def ldiff(self):
-        d = self.serialize(elements_as_list = True, encoding=settings.FILE_CHARSET)
-        del d['dn']
-        return export_entry_to_ldiff(self.dn, d)
-
-    def json(self):
-        return export_entry_to_json(self.serialize())
 
     def set_password(self, password, old_password=None):
         ldap_conn = connections['ldap']

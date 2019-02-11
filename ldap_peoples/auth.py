@@ -25,7 +25,7 @@ class LdapAcademiaAuthBackend(ModelBackend):
         ldap_conn = connections['ldap']
         user = None
         lu = LdapAcademiaUser.objects.filter(uid=username).first()
-        if not lu or not lu.is_active():
+        if not lu:
             return None
 
         # check if username exists and if it is active
@@ -38,6 +38,10 @@ class LdapAcademiaAuthBackend(ModelBackend):
             print(e)
             return None
 
+        # if account beign unlocked this will be always false
+        if not lu.is_active():
+            return None
+        
         scoped_username = '@'.join((lu.uid, settings.LDAP_BASE_DOMAIN))
         try:
             user = User.objects.get(username=scoped_username)

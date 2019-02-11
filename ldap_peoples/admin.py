@@ -30,7 +30,7 @@ class LogEntryAdmin(ReadOnlyAdmin):
                      'object_repr',)
     readonly_fields = ('repr_action',
                       )
-                      
+
     class Media:
         js = ('js/textarea-autosize.js',)
 
@@ -49,22 +49,21 @@ class LdapDbModelAdmin(admin.ModelAdmin):
 
     class Media:
         js = ('js/textarea-autosize.js',
-              'js/given_display_name_autofill.js',
-              )
+              'js/given_display_name_autofill.js')
 
 
 @admin.register(LdapAcademiaUser)
 class LdapAcademiaUserAdmin(LdapDbModelAdmin):
     form = LdapAcademiaUserAdminForm
     list_display = ('uid',
-                    'givenName', 
-                    'get_emails_as_ul', 
+                    'givenName',
+                    'get_emails_as_ul',
                     'get_affiliation_as_ul',
                     'get_status',
                     # 'get_membership_as_ul',
                     'createTimestamp',
                     'modifyTimestamp')
-    list_filter = ( 
+    list_filter = (
                    # 'pwdChangedTime', 'created', 'modified',
                    ('createTimestamp', DateRangeFilter),
                    ('modifyTimestamp', DateTimeRangeFilter),
@@ -77,8 +76,8 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                      'mail', # https://github.com/django-ldapdb/django-ldapdb/issues/104
                      )
     readonly_fields = (
-                       'createTimestamp', 
-                       'modifyTimestamp', 
+                       'createTimestamp',
+                       'modifyTimestamp',
                        'distinguished_name',
                        'creatorsName',
                        'modifiersName',
@@ -96,16 +95,17 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
     actions = [send_reset_token_email,
                enable_account,
                disable_account,
+               lock_account,
                export_as_json,
                export_as_ldif]
 
     # action_form = FileImportActionForm
-    
+
     # TODO: aggregate lookup for evaluating min max on records
     #date_hierarchy = 'created'
-    
+
     fieldsets = (
-        (None, { 'fields' : (('uid', 
+        (None, { 'fields' : (('uid',
                               'distinguished_name'
                               ),
                              ('cn','sn',),
@@ -115,7 +115,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                 }),
         ('Password', {
             'classes': ('collapse',),
-            'fields': ( 
+            'fields': (
                         # ('password_encoding', 'new_passwd'),
                         ('userPassword', 'sambaNTPassword'),
                         ('new_passwd',),
@@ -124,7 +124,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         ),
         ('Additional info', {
             'classes': ('collapse',),
-            'fields': ( 
+            'fields': (
                         ('createTimestamp', 'creatorsName',),
                         ('modifyTimestamp', 'modifiersName',),
                         ('get_membership_as_ul',
@@ -135,8 +135,8 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         ),
         ('Password Policy', {
             'classes': ('collapse',),
-            'fields': ( 
-                        (## 'pwdAccountLockedTime', 
+            'fields': (
+                        (## 'pwdAccountLockedTime',
                          'locked_time',
                         ),
                         ('failure_times',),
@@ -149,7 +149,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         ),
         ('Academia eduPerson', {
             ##'classes': ('collapse',),
-            'fields': ( 
+            'fields': (
                         ('eduPersonPrincipalName', 'eduPersonOrcid',),
                         ('eduPersonAffiliation',
                         'eduPersonScopedAffiliation',),

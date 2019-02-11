@@ -1,7 +1,11 @@
 import crypt
 
 from base64 import encodestring
-from django.conf import settings
+try:
+    from django.conf import settings
+    _CHARSET = settings.DEFAULT_CHARSET
+except:
+    _CHARSET = 'utf-8'
 from hashlib import (sha1,
                      sha256,
                      sha384,
@@ -17,12 +21,11 @@ from passlib.hash import (ldap_plaintext,
                           atlassian_pbkdf2_sha1,
                           ldap_md5_crypt,
                           ldap_sha256_crypt,
-                          ldap_sha512_crypt,
-                          )
+                          ldap_sha512_crypt)
 from os import urandom
 
-# _CHARSET = 'utf-8'
-_CHARSET = settings.FILE_CHARSET
+# how many bytes the salt is long
+_LDAP_SALT_LENGHT = 8
 
 def encode_secret(enc, new_value=None):
     """
@@ -43,7 +46,7 @@ def encode_secret(enc, new_value=None):
     elif enc == 'SHA':
         password_renewed = ldap_sha1.hash(new_value.encode(_CHARSET))
     elif enc == 'SSHA':
-        salt = urandom(4)
+        salt = urandom(8)
         hash = sha1(new_value.encode(_CHARSET))
         hash.update(salt)
         hash_encoded = encodestring(hash.digest() + salt)
@@ -53,7 +56,7 @@ def encode_secret(enc, new_value=None):
         password_renewed = sha256(new_value.encode(_CHARSET)).digest()
         password_renewed = '{%s}%s' % (enc, encodestring(password_renewed).decode(_CHARSET)[:-1])
     elif enc == 'SSHA-256':
-        salt = urandom(4)
+        salt = urandom(_LDAP_SALT_LENGHT)
         hash = sha256(new_value.encode(_CHARSET))
         hash.update(salt)
         hash_encoded = encodestring(hash.digest() + salt)
@@ -63,7 +66,7 @@ def encode_secret(enc, new_value=None):
         password_renewed = sha384(new_value.encode(_CHARSET)).digest()
         password_renewed = '{%s}%s' % (enc, encodestring(password_renewed).decode(_CHARSET)[:-1])
     elif enc == 'SSHA-384':
-        salt = urandom(4)
+        salt = urandom(_LDAP_SALT_LENGHT)
         hash = sha384(new_value.encode(_CHARSET))
         hash.update(salt)
         hash_encoded = encodestring(hash.digest() + salt)
@@ -73,7 +76,7 @@ def encode_secret(enc, new_value=None):
         password_renewed = sha512(new_value.encode(_CHARSET)).digest()
         password_renewed = '{%s}%s' % (enc, encodestring(password_renewed).decode(_CHARSET)[:-1])
     elif enc == 'SSHA-512':
-        salt = urandom(4)
+        salt = urandom(_LDAP_SALT_LENGHT)
         hash = sha512(new_value.encode(_CHARSET))
         hash.update(salt)
         hash_encoded = encodestring(hash.digest() + salt)
@@ -105,3 +108,6 @@ def test_encoding_secrets():
     for i in ['NT', 'LM']:
         p = encode_secret(i, 'zio')
         print(i, ':', p)
+
+if __name__ == '__main__':
+    test_encoding_secrets()

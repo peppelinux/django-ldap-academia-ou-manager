@@ -47,9 +47,11 @@ class TimeStampField(fields.DateTimeField):
             return None
         else:
             if b'.' in value[0]:
-                time_struct = time.strptime(value[0].decode(connection.charset), settings.LDAP_DATETIME_MILLISECONDS_FORMAT)
+                time_struct = time.strptime(value[0].decode(connection.charset),
+                                                            settings.LDAP_DATETIME_MILLISECONDS_FORMAT)
             else:
-                time_struct = time.strptime(value[0].decode(connection.charset), settings.LDAP_DATETIME_FORMAT)
+                time_struct = time.strptime(value[0].decode(connection.charset),
+                                                            settings.LDAP_DATETIME_FORMAT)
             timestamp = time.mktime(time_struct)
             value = timezone.datetime.fromtimestamp(timestamp)
             if settings.USE_TZ:
@@ -68,7 +70,7 @@ class TimeStampField(fields.DateTimeField):
                 try:
                     return datetime.datetime.strptime(value,
                                                       self._date_format).date()
-                except:                    
+                except:
                     raise ValueError(
                         'DateField can be only set to a datetime.date instance')
         timestamps_value = value.strftime(self._date_format).encode(connection.charset)
@@ -82,7 +84,7 @@ class ListField(LdapFieldMixin, fields.Field):
     def from_ldap(self, value, connection):
         v = sorted([x.decode(connection.charset) for x in value])
         return v
-    
+
     def formfield(self, **kwargs):
         defaults = {'form_class': FormListField,
                     'widget': SplitJSONWidget,
@@ -100,7 +102,7 @@ ListField.register_lookup(IContainsLookup)
 
 class EmailListField(ListField):
     pass
-    
+
     def formfield(self, **kwargs):
         defaults = {'form_class': FormEmailListField,
                     'widget': SplitJSONWidget,
@@ -119,7 +121,7 @@ EmailListField.register_lookup(IContainsLookup)
 
 class ScopedListField(ListField):
     pass
-    
+
     def formfield(self, **kwargs):
         defaults = {'form_class': FormScopedListField,
                     'widget': SplitJSONWidget,
@@ -223,13 +225,13 @@ eduPersonScopedAffiliationListField.register_lookup(IContainsLookup)
 class MultiValueField(LdapFieldMixin, fields.TextField):
 
     multi_valued_field = True
-    
+
     def _cast(self, value, strip_value = ' '):
         if isinstance(value, str):
             return [i.strip(strip_value).encode(settings.FILE_CHARSET) for i in value.split(os.linesep)]
         #print('_cast', type(value), value)
         return [v.encode(settings.FILE_CHARSET) for v in value]
-    
+
     def from_ldap(self, value, connection):
         a = [x.decode(connection.charset) for x in value]
         return os.linesep.join(a)

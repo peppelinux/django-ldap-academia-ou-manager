@@ -117,12 +117,12 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
     def clean_schacExpiryDate(self):
         """
         This kind of field need a better generalization
-        
-        The clean_<field> hooks in the forms API are for doing additional validation. 
-        It is called after the field calls its clean method. 
-        If the field does not consider the input valid then the clean_<field> is not called. 
+
+        The clean_<field> hooks in the forms API are for doing additional validation.
+        It is called after the field calls its clean method.
+        If the field does not consider the input valid then the clean_<field> is not called.
         This is noted in the custom validation docs:
-        https://docs.djangoproject.com/en/2.1/ref/forms/validation/ 
+        https://docs.djangoproject.com/en/2.1/ref/forms/validation/
         """
         datestr = ' '.join((self.data['schacExpiryDate_0'], self.data['schacExpiryDate_1']))
         value = None
@@ -137,7 +137,7 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
         self.cleaned_data['schacExpiryDate'] = value
         return self.cleaned_data['schacExpiryDate']
 
-    def clean_MultiValueWidget(self, field, data, 
+    def clean_MultiValueWidget(self, field, data,
                                default_prefix, count,
                                sep=':'):
         # print(field)
@@ -161,7 +161,7 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
                 if cnt < count:
                     field_group.append(row_dict[item])
                     continue
-    
+
                 field_group.append(row_dict[item])
                 new_value = sep.join(field_group)
                 value_list.append(new_value)
@@ -197,7 +197,7 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
                 if cnt < 1:
                     field_group.append(row_dict[item])
                     continue
-    
+
                 field_group.append(row_dict[item])
                 new_value = ''.join(field_group)
                 value_list.append(new_value)
@@ -247,14 +247,14 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
                     date_in = None
                     try:
                         date_in = datetime.datetime.strptime(data[field], date_format)
-                    except Exception as e: 
+                    except Exception as e:
                         # print(date_format, e)
                         pass
                     if date_in:
                         data[field] = date_in
                         break
                     # print(data[field])
-            
+
             elif field == 'schacExpiryDate':
                 data[field] = self.clean_schacExpiryDate()
             elif field == 'eduPersonPrincipalName':
@@ -273,7 +273,6 @@ class LdapGroupAdminMultiValuedForm(LdapMultiValuedForm):
         for field in self.fields:
             if isinstance(self.fields[field].widget, SplitJSONWidget):
                 data[field] = self.clean_ListField(field, data)
-                print(field, data[field])
                 # TODO: regex validation here:
                 # clean error manually
                 if self._errors.get(field):

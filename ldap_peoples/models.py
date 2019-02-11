@@ -228,8 +228,13 @@ class LdapAcademiaUser(ldapdb.models.Model):
     def is_renewable(self):
         return self.pwdAccountLockedTime != settings.PPOLICY_PERMANENT_LOCKED_TIME
 
-    def disable(self):
+    def lock(self):
         self.pwdAccountLockedTime = settings.PPOLICY_PERMANENT_LOCKED_TIME
+        self.save()
+        return self.pwdAccountLockedTime
+
+    def disable(self):
+        self.pwdAccountLockedTime = format_generalized_time(timezone.localtime())
         self.save()
         return self.pwdAccountLockedTime
 

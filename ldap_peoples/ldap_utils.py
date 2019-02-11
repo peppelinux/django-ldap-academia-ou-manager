@@ -121,7 +121,7 @@ def import_entries_from_json(fopen):
         # if available 4 update
         if entry.get('schacDateOfBirth'):
             entry['schacDateOfBirth'] = timezone.datetime.strptime(entry['schacDateOfBirth'],
-                                                                    settings.SCHAC_DATEOFBIRTH_FORMAT)
+                                                                   settings.SCHAC_DATEOFBIRTH_FORMAT)
         if entry.get('schacExpiryDate'):
             entry['schacExpiryDate'] = parse_generalized_time(entry['schacExpiryDate']) #.encode(settings.DEFAULT_CHARSET)
         if lu:

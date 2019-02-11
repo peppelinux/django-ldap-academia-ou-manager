@@ -83,15 +83,16 @@ SCHAC_PERSONALUNIQUEID_DOCUMENT_CODE = [SCHAC_PERSONALUNIQUEID_DEFAULT_DOCUMENT_
 RFC3339_DATE_FORMAT = "%Y%m%d"
 SCHAC_DATEOFBIRTH_FORMAT = RFC3339_DATE_FORMAT
 
-READONLY_FIELDS = ['userPassword',
-                   'sambaNTPassword',
-                   'memberOf',
-                   'createTimestamp',
-                   'modifyTimestamp',
+READONLY_FIELDS = ['memberOf',
+                   # 'userPassword',
+                   # 'sambaNTPassword',
+                   # 'createTimestamp',
+                   # 'modifyTimestamp',
                    'creatorsName',
                    'modifiersName',
-                   'pwdChangedTime',
-                   'pwdFailureTime']
+                   # 'pwdChangedTime',
+                   # 'pwdFailureTime'
+                   ]
 
 AFFILIATION = (
                 # ('faculty', 'faculty'),

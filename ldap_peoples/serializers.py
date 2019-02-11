@@ -16,7 +16,7 @@ class LdapSerializer(object):
                 else:
                     d['objectclass'].append(i)
         for ele in self._meta.get_fields():
-            if ele.attname in settings.READONLY_FIELDS: continue
+            # if ele.attname in settings.READONLY_FIELDS: continue
             value = getattr(self, ele.attname)
             if not value: continue
 
@@ -26,7 +26,8 @@ class LdapSerializer(object):
                     d[ele.attname] = [i.encode(encoding) for i in value]
                 else:
                     d[ele.attname] = [i for i in value]
-            elif ele.attname in ('schacExpiryDate',):
+            elif ele.attname in ('schacExpiryDate', 'pwdChangedTime',
+                                 'createTimestamp', 'modifyTimestamp'):
                 d[ele.attname] = format_generalized_time(value)
                 if encoding:
                     d[ele.attname] = d[ele.attname].encode(encoding)

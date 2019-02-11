@@ -12,7 +12,9 @@ from .models import *
 
 
 def export_as_json(modeladmin, request, queryset):
-    response = HttpResponse(content_type="application/json")
+    response = HttpResponse(content_type="application/force-download")
+    fname = 'ldapuser_export_{}.json'.format(timezone.localtime().isoformat())
+    response['Content-Disposition'] = 'attachment; filename={}'.format(fname)
     # serializers.serialize("json", queryset, stream=response, indent=2)
     app_name = queryset.model._meta.app_label
     model_name = queryset.model.__name__
@@ -26,7 +28,7 @@ export_as_json.short_description = _("Export as JSON")
 
 def export_as_ldif(modeladmin, request, queryset):
     response = HttpResponse(content_type="application/ldif")
-    attach_str = 'attachment; filename="ldapuser_export.{}.ldif"'
+    attach_str = 'attachment; filename="ldapuser_export_{}.ldif"'
     t = timezone.localtime().isoformat()
     if settings.USE_TZ:
         response['Content-Disposition'] = attach_str.format(t)

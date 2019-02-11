@@ -60,10 +60,10 @@ def export_entry_to_ldiff(dn, entry):
     raw example:
     from ldap_peoples.models import LdapAcademiaUser
     lu = LdapAcademiaUser.objects.filter(cn='peppe').first()
-    
+
     import sys, ldap_peoples.ldif as ldif
     ldif_writer=ldif.LDIFWriter(sys.stdout)
-    
+
     entry=lu.serialize(elements_as_list=1, encoding='utf-8')
     dn=entry['dn'][0]
     del entry['dn']
@@ -91,7 +91,7 @@ def import_entries_from_ldiff(fopen):
 
     # get the first LDAP router
     ldap_conn = connections['ldap']
-    
+
     for dn, entry in ldif_rec.all_records:
         add_modlist = modlist.addModlist(entry)
         ldap_conn.add_s(dn, add_modlist)
@@ -109,7 +109,7 @@ def import_entries_from_json(fopen):
     app_name = obj['app']
     app_model = apps.get_model(app_label=app_name, model_name=model_name)
     # ALTRA STRATEGIA: porta tutto come ldiff?
-    
+
     #print(json.dumps(obj, indent=2))
     for i in obj['entries']:
         entry = copy.copy(i)
@@ -117,9 +117,13 @@ def import_entries_from_json(fopen):
         uid = entry['uid']
         del( entry['objectclass'] )
         fields = i.keys()
-        # print(fields)
         lu = app_model.objects.filter(uid=uid).first()
         # if available 4 update
+        if entry.get('schacDateOfBirth'):
+            entry['schacDateOfBirth'] = timezone.datetime.strptime(entry['schacDateOfBirth'],
+                                                                    settings.SCHAC_DATEOFBIRTH_FORMAT)
+        if entry.get('schacExpiryDate'):
+            entry['schacExpiryDate'] = parse_generalized_time(entry['schacExpiryDate']) #.encode(settings.DEFAULT_CHARSET)
         if lu:
             # update values
             for key in entry:
@@ -128,7 +132,7 @@ def import_entries_from_json(fopen):
             lu.save()
         else:
             lu = app_model.objects.create(**entry)
-        
+
     # returns False if everithing ok, otherwise return list of failed
     return []
 

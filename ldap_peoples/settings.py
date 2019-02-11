@@ -65,6 +65,8 @@ SECRET_FIELD_VALIDATORS = {'regexp_lowercase': '[a-z]+',
                            'regexp_number': '[0-9]+',
                            'regexp_special': '[\!\%\-_+=\[\]{\}\:\,\.\?\<\>\(\)\;]+'}
 
+EEPN_VALIDATOR = '[a-zA-Z\.\_\:]+@[a-zA-Z]+'
+
 # https://www.internet2.edu/products-services/trust-identity/mace-registries/urnmace-namespace/
 SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX = 'urn:schac:personalUniqueCode'
 
@@ -103,3 +105,6 @@ AFFILIATION = (
                 ('employee', 'employee'),
                 ('library-walk-in', 'library-walk-in'),
               )
+
+# this option deactive previous auth sessions when a new auth occours
+MULTIPLE_USER_AUTH_SESSIONS = False

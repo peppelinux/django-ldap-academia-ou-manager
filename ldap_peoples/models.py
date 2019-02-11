@@ -25,7 +25,7 @@ from . ldap_utils import (parse_generalized_time,
                           get_expiration_date)
 from . model_fields import (TimeStampField,
                             MultiValueField,
-                            ListField, 
+                            ListField,
                             EmailListField,
                             SchacPersonalUniqueIdListField,
                             SchacPersonalUniqueCodeListField,
@@ -74,7 +74,7 @@ class LdapGroup(ldapdb.models.Model):
             members = [i for i in members if i != member_dn_obj.dn ]
         self.member = os.linesep.join(members)
         self.save()
-    
+
     def __str__(self):
         return self.cn
 
@@ -110,7 +110,7 @@ class LdapAcademiaUser(ldapdb.models.Model):
                     verbose_name="User ID",
                     help_text="uid",
                     primary_key=True)
-    cn = CharField(db_column='cn', 
+    cn = CharField(db_column='cn',
                      verbose_name=_("Name"),
                      help_text='cn',
                      blank=False)
@@ -126,14 +126,14 @@ class LdapAcademiaUser(ldapdb.models.Model):
                             blank=True, null=True)
     telephoneNumber = ListField(db_column='telephoneNumber',
                                 blank=True)
-    mail = EmailListField(db_column='mail', 
+    mail = EmailListField(db_column='mail',
                           default='',
                           blank=True, null=True)
     userPassword = CharField(db_column='userPassword',
                              verbose_name="LDAP Password",
                              blank=True, null=True,
                              editable=False)
-    sambaNTPassword = CharField(db_column='sambaNTPassword', 
+    sambaNTPassword = CharField(db_column='sambaNTPassword',
                                 help_text=_("SAMBA NT Password (freeRadius PEAP)"),
                                 blank=True, null=True, editable=False)
     # academia
@@ -200,7 +200,7 @@ class LdapAcademiaUser(ldapdb.models.Model):
     modifyTimestamp =  DateTimeField(db_column='modifyTimestamp', editable=False, null=True)
     creatorsName = CharField(db_column='creatorsName', editable=False, null=True)
     modifiersName = CharField(db_column='modifiersName', editable=False, null=True)
-    
+
     # If pwdAccountLockedTime is set to 000001010000Z, the user's account has been permanently locked and may only be unlocked by an administrator.
     # Note that account locking only takes effect when the pwdLockout password policy attribute is set to "TRUE".
     pwdAccountLockedTime = CharField(db_column='pwdAccountLockedTime')
@@ -218,12 +218,15 @@ class LdapAcademiaUser(ldapdb.models.Model):
     def pwd_changed(self):
         if self.pwdChangedTime:
             return parse_generalized_time(self.pwdChangedTime)
-    
+
     def is_active(self):
         if self.pwdAccountLockedTime: return False
         if self.schacExpiryDate:
             if self.schacExpiryDate < timezone.localtime(): return False
         return True
+
+    def is_renewable(self):
+        return self.pwdAccountLockedTime != settings.PPOLICY_PERMANENT_LOCKED_TIME
 
     def disable(self):
         self.pwdAccountLockedTime = settings.PPOLICY_PERMANENT_LOCKED_TIME
@@ -239,7 +242,7 @@ class LdapAcademiaUser(ldapdb.models.Model):
             return '{}: locked by admin'.format(settings.PPOLICY_PERMANENT_LOCKED_TIME)
         elif self.pwdAccountLockedTime:
             return parse_generalized_time(self.pwdAccountLockedTime)
-    
+
     def failure_times(self):
         if not self.pwdFailureTime: return
         times = self.pwdFailureTime.split(os.linesep)
@@ -256,7 +259,7 @@ class LdapAcademiaUser(ldapdb.models.Model):
     def set_schacPersonalUniqueID(self, value,
                                   doc_type=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_DOCUMENT_CODE,
                                   country_code=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE):
-        
+
         if settings.SCHAC_PERSONALUNIQUEID_DEFAULT_PREFIX not in value:
             unique_id = ':'.join((settings.SCHAC_PERSONALUNIQUEID_DEFAULT_PREFIX,
                                   country_code,
@@ -270,7 +273,7 @@ class LdapAcademiaUser(ldapdb.models.Model):
 
     def set_schacHomeOrganizationType(self, value,
                                       country_code=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE):
-        
+
         if settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX not in value:
             unique_id = ':'.join((settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX,
                                   country_code,
@@ -310,7 +313,7 @@ class LdapAcademiaUser(ldapdb.models.Model):
             if ele.attname in settings.READONLY_FIELDS: continue
             value = getattr(self, ele.attname)
             if not value: continue
-            
+
             # TODO better code here!
             if isinstance(value, list):
                 if encoding:
@@ -330,10 +333,10 @@ class LdapAcademiaUser(ldapdb.models.Model):
                     d[ele.attname] = ele.value_to_string(self).encode(encoding)
                 else:
                     d[ele.attname] = ele.value_to_string(self)
-            
+
             if elements_as_list and not isinstance(value, list):
                 d[ele.attname] = [d[ele.attname]]
-            
+
         return d
 
     def ldiff(self):
@@ -352,7 +355,7 @@ class LdapAcademiaUser(ldapdb.models.Model):
                                       newpw = password.encode(settings.FILE_CHARSET))
         ldap_conn.connection.unbind_s()
         return True
-    
+
     def set_password_custom(self, password, hashtype=settings.DEFAULT_SECRET_TYPE):
         """
         EXPERIMENTAL - do not use in production
@@ -370,13 +373,13 @@ class LdapAcademiaUser(ldapdb.models.Model):
             setattr(self, field, enc_value)
         self.save()
         return self.userPassword
-    
+
     def reset_schacExpiryDate(self):
         self.schaExpiryDate = timezone.localtime()+\
                               timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
         self.save()
         return self.schaExpiryDate
-    
+
     def save(self, *args, **kwargs):
         for field in settings.READONLY_FIELDS:
             if hasattr(self, field):

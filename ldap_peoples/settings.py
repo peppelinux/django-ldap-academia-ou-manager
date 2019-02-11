@@ -13,7 +13,7 @@ PPOLICY_PERMANENT_LOCKED_TIME = '000001010000Z'
 PPOLICY_PASSWD_MIN_LEN = 8
 PPOLICY_PASSWD_MAX_LEN = 32
 
-# an account must be renewed every 6 months 
+# an account must be renewed every 6 months
 SHAC_EXPIRY_DURATION_DAYS = 183
 
 
@@ -51,12 +51,10 @@ if PWSHA2_OVERLAY:
     SECRET_PASSWD_TYPE.extend(PWSHA2_OVERLAY_PASSWD_TYPE)
 
 # these are too weak
-DISABLED_SECRET_TYPES = [
-                          'Plaintext',
-                          'MD5',
-                          'SMD5',
-                          'PKCS5S2',
-                        ]
+DISABLED_SECRET_TYPES = ['Plaintext',
+                         'MD5',
+                         'SMD5',
+                         'PKCS5S2']
 # encode_password_custom end
 
 # Password validation on user web form input field
@@ -100,8 +98,8 @@ AFFILIATION = (
                 ('student', 'student'),
                 ('staff', 'staff'),
                 ('alum', 'alum'),
-                ('member', 'member'), 
-                ('affiliate', 'affiliate'), 
+                ('member', 'member'),
+                ('affiliate', 'affiliate'),
                 ('employee', 'employee'),
                 ('library-walk-in', 'library-walk-in'),
               )

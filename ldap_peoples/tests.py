@@ -1,7 +1,7 @@
 from django.test import TestCase
 from ldap_peoples.models import LdapAcademiaUser
 from ldap_peoples.ldap_utils import (import_entries_from_json,
-                                import_entries_from_ldif)
+                                     import_entries_from_ldif)
 
 
 _test_guy = { "uid": "jimmy",

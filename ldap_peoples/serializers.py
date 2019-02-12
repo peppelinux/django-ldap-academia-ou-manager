@@ -2,7 +2,7 @@ from django.conf import settings
 from collections import OrderedDict
 
 from . ldap_utils import (format_generalized_time,
-                          export_entry_to_ldiff,
+                          export_entry_to_ldif,
                           export_entry_to_json)
 
 class LdapSerializer(object):
@@ -16,7 +16,6 @@ class LdapSerializer(object):
                 else:
                     d['objectclass'].append(i)
         for ele in self._meta.get_fields():
-            # if ele.attname in settings.READONLY_FIELDS: continue
             value = getattr(self, ele.attname)
             if not value: continue
 
@@ -45,10 +44,10 @@ class LdapSerializer(object):
                 d[ele.attname] = [d[ele.attname]]
         return d
 
-    def ldiff(self):
+    def ldif(self):
         d = self.serialize(elements_as_list = True, encoding=settings.FILE_CHARSET)
         del d['dn']
-        return export_entry_to_ldiff(self.dn, d)
+        return export_entry_to_ldif(self.dn, d)
 
     def json(self):
         return export_entry_to_json(self.serialize())

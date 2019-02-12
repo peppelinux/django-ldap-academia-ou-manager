@@ -334,12 +334,12 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         return self.schaExpiryDate
 
     def save(self, *args, **kwargs):
-        for field in settings.READONLY_FIELDS:
-            if hasattr(self, field):
-                try:
-                    del self.__dict__[field]
-                except:
-                    print('error on deletion {} readonly field'.format(field))
+        # for field in settings.READONLY_FIELDS:
+            # if hasattr(self, field):
+                # try:
+                    # del self.__dict__[field]
+                # except:
+                    # print('error on deletion {} readonly field'.format(field))
         super().save(*args, **kwargs)
 
     def __str__(self):

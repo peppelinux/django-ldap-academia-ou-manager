@@ -38,7 +38,7 @@ def format_generalized_time(dt):
     return dt.strftime(settings.LDAP_DATETIME_FORMAT)
 
 
-def export_entries_to_ldiff(entries_list):
+def export_entries_to_ldif(entries_list):
     if isinstance(entry, list):
         pass
 
@@ -55,7 +55,7 @@ def export_entry_to_json(entry):
     return out.read()
 
 
-def export_entry_to_ldiff(dn, entry):
+def export_entry_to_ldif(dn, entry):
     """
     raw example:
     from ldap_peoples.models import LdapAcademiaUser
@@ -77,7 +77,7 @@ def export_entry_to_ldiff(dn, entry):
     return out.read()
 
 
-def import_entries_from_ldiff(fopen):
+def import_entries_from_ldif(fopen):
     # http://www.python-ldap.org/en/latest/reference/ldif.html#ldif.LDIFRecordList
 
     # Get a LDIFRecordList object of posix.ldif file
@@ -108,7 +108,7 @@ def import_entries_from_json(fopen):
     model_name = obj['model']
     app_name = obj['app']
     app_model = apps.get_model(app_label=app_name, model_name=model_name)
-    # ALTRA STRATEGIA: porta tutto come ldiff?
+    # ALTRA STRATEGIA: porta tutto come ldif?
 
     #print(json.dumps(obj, indent=2))
     for i in obj['entries']:

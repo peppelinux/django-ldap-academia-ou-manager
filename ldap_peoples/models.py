@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.db import models
 from django.utils.translation import gettext as _
 from ldapdb.models.fields import (CharField,
-                                  DateField,
+                                  # DateField,
                                   DateTimeField,
                                   TimestampField,
                                   ImageField,
@@ -20,6 +20,7 @@ from . ldap_utils import (parse_generalized_time,
                           parse_pwdfailure_time,
                           get_expiration_date)
 from . model_fields import (TimeStampField,
+                            DateField,
                             MultiValueField,
                             ListField,
                             EmailListField,
@@ -189,6 +190,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                                      help_text=_(('Date from which the set of '
                                                   'data is to be considered invalid')),
                                      default=get_expiration_date,
+                                     format=settings.DATETIME_FORMAT,
                                      blank=False, null=True)
     # readonly
     memberOf = MultiValueField(db_column='memberOf', editable=False, null=True)
@@ -334,12 +336,20 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         return self.schaExpiryDate
 
     def save(self, *args, **kwargs):
+        # DEPRECATED
         # for field in settings.READONLY_FIELDS:
             # if hasattr(self, field):
                 # try:
                     # del self.__dict__[field]
                 # except:
                     # print('error on deletion {} readonly field'.format(field))
+
+        # check types schacDateOfBirth and schacExpiryDate before saving
+        # if entry.get('schacDateOfBirth'):
+            # entry['schacDateOfBirth'] = timezone.datetime.strptime(entry['schacDateOfBirth'],
+                                                                   # settings.SCHAC_DATEOFBIRTH_FORMAT)
+        # if entry.get('schacExpiryDate'):
+            # entry['schacExpiryDate'] = parse_generalized_time(entry['schacExpiryDate'])
         super().save(*args, **kwargs)
 
     def __str__(self):

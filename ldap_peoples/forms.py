@@ -129,11 +129,12 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
         for date_format in settings.DATETIME_INPUT_FORMATS:
             try:
                 value = datetime.datetime.strptime(datestr, date_format)
+                break
             except Exception as e:
                 print(e)
                 pass
-        if not value: return
-        value = timezone.make_aware(value, timezone.pytz.utc)
+        # if not value: return
+        # value = timezone.make_aware(value, timezone.pytz.utc)
         self.cleaned_data['schacExpiryDate'] = value
         return self.cleaned_data['schacExpiryDate']
 
@@ -242,13 +243,12 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
                 # per generalizzare questo agire nel metodo to_python del field
                 if not data[field]:
                     data[field] = None
-                    continue
                 for date_format in settings.DATE_INPUT_FORMATS:
                     date_in = None
                     try:
                         date_in = datetime.datetime.strptime(data[field], date_format)
                     except Exception as e:
-                        # print(date_format, e)
+                        print(date_format, e)
                         pass
                     if date_in:
                         data[field] = date_in

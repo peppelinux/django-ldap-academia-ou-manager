@@ -1,10 +1,13 @@
+import io
+
+from django.conf import settings
 from django.test import TestCase
 from ldap_peoples.models import LdapAcademiaUser
 from ldap_peoples.ldap_utils import (import_entries_from_json,
                                      import_entries_from_ldif)
 
-
-_test_guy = { "uid": "jimmy",
+_test_uid = 'jimmy89234_yWHO!'
+_test_guy = { "uid": "jimmy89234_yWHO!",
               "cn": "jimmy",
               "givenName": "jimmy",
               "sn": "grossi",
@@ -41,27 +44,35 @@ _test_guy = { "uid": "jimmy",
               "createTimestamp": "20190211161620Z",
               "modifyTimestamp": "20190211161629Z",
               "creatorsName": "cn=admin,dc=testunical,dc=it",
-              "modifiersName": "cn=admin,dc=testunical,dc=it",
-              "pwdChangedTime": "20190211171629Z"}
+              "modifiersName": "cn=admin,dc=testunical,dc=it"}
 
 
 class LdapAcademiaUserTestCase(TestCase):
     def setUp(self):
         """test user creation"""
+        d = LdapAcademiaUser.objects.filter(uid=_test_uid).first()
+        if d:
+            d.delete()
         LdapAcademiaUser.objects.create(**_test_guy)
 
-    def test_json_import_export(self):
-        d = LdapAcademiaUser.objects.get(uid="jimmy")
-        export = d.json()
-        print(export)
-        d.delete()
-        imp = import_entries_from_json(d)
-        self.assertIs(imp, False)
-
     def test_ldif_import_export(self):
-        d = LdapAcademiaUser.objects.get(uid="jimmy")
-        export = d.ldif()
-        print(export)
+        d = LdapAcademiaUser.objects.get(uid=_test_uid)
+        out = io.StringIO()
+        out.write(d.ldif())
+        out.seek(0)
         d.delete()
-        imp = import_entries_from_ldif(d)
-        self.assertIs(imp, False)
+        imp = import_entries_from_ldif(out)
+        self.assertIs(imp, True)
+
+    def test_json_import_export(self):
+        d = LdapAcademiaUser.objects.get(uid=_test_uid)
+        out = io.StringIO()
+        out.write(d.json_ext())
+        out.seek(0)
+        d.delete()
+        imp = import_entries_from_json(out)
+        self.assertIs(imp, True)
+
+    def test_clean(self):
+        d = LdapAcademiaUser.objects.filter(uid=_test_uid).first()
+        if d: d.delete()

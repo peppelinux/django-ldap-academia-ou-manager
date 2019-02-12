@@ -37,6 +37,12 @@ def format_generalized_time(dt):
     """
     return dt.strftime(settings.LDAP_DATETIME_FORMAT)
 
+def clean_entry_dict(d):
+    entry = {}
+    for k,v in d.items():
+        if k not in settings.READONLY_FIELDS:
+            entry[k] = v
+    return entry
 
 def export_entries_to_ldif(entries_list):
     if isinstance(entry, list):
@@ -71,11 +77,14 @@ def export_entry_to_ldif(dn, entry):
     """
     out = io.StringIO()
     if isinstance(entry, dict):
+        entry = clean_entry_dict(entry)
         ldif_writer=ldif.LDIFWriter(out)
         ldif_writer.unparse(dn, entry)
     out.seek(0)
     return out.read()
 
+def adapt_entries_imports(all_records):
+    pass
 
 def import_entries_from_ldif(fopen):
     # http://www.python-ldap.org/en/latest/reference/ldif.html#ldif.LDIFRecordList
@@ -96,26 +105,28 @@ def import_entries_from_ldif(fopen):
         add_modlist = modlist.addModlist(entry)
         ldap_conn.add_s(dn, add_modlist)
 
-    # returns False if everithing ok, otherwise return list of failed
-    return []
-
+    return True
 
 def import_entries_from_json(fopen):
     content = fopen.read()
-    encoding = chardet.detect(content)["encoding"]
-    obj = json.loads(content.decode(encoding))
+    if isinstance(content, bytes):
+        encoding = chardet.detect(content)["encoding"]
+        obj = json.loads(content.decode(encoding))
+    else:
+        obj = json.loads(content)
 
     model_name = obj['model']
     app_name = obj['app']
-    app_model = apps.get_model(app_label=app_name, model_name=model_name)
+    app_model = apps.get_model(app_label=app_name,
+                               model_name=model_name)
     # ALTRA STRATEGIA: porta tutto come ldif?
 
     #print(json.dumps(obj, indent=2))
     for i in obj['entries']:
-        entry = copy.copy(i)
+        entry = clean_entry_dict(i)
+        del(entry['objectclass'])
         # try/catch here with messages!
         uid = entry['uid']
-        del( entry['objectclass'] )
         fields = i.keys()
         lu = app_model.objects.filter(uid=uid).first()
         # if available 4 update
@@ -126,15 +137,12 @@ def import_entries_from_json(fopen):
             entry['schacExpiryDate'] = parse_generalized_time(entry['schacExpiryDate']) #.encode(settings.DEFAULT_CHARSET)
         if lu:
             # update values
-            for key in entry:
-                if key in settings.READONLY_FIELDS: continue
-                setattr(lu, key, entry[key])
+            for k,v in entry.items():
+                setattr(lu, k, v)
             lu.save()
         else:
             lu = app_model.objects.create(**entry)
-
-    # returns False if everithing ok, otherwise return list of failed
-    return []
+    return True
 
 
 def get_expiration_date():

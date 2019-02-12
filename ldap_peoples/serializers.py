@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from collections import OrderedDict
 
@@ -16,6 +18,7 @@ class LdapSerializer(object):
                 else:
                     d['objectclass'].append(i)
         for ele in self._meta.get_fields():
+            #if ele in settings.READONLY_FIELDS: continue
             value = getattr(self, ele.attname)
             if not value: continue
 
@@ -51,3 +54,9 @@ class LdapSerializer(object):
 
     def json(self):
         return export_entry_to_json(self.serialize())
+
+    def json_ext(self):
+        d = {'app': self._meta.app_label,
+             'model': self._meta.model_name,
+             'entries': [self.serialize()]}
+        return json.dumps(d)

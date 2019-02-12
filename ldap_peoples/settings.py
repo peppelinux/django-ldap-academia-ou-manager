@@ -88,10 +88,10 @@ READONLY_FIELDS = ['memberOf',
                    'modifiersName',
                    # 'userPassword',
                    # 'sambaNTPassword',
-                   # 'createTimestamp',
-                   # 'modifyTimestamp',
-                   # 'pwdChangedTime',
-                   # 'pwdFailureTime'
+                   'createTimestamp',
+                   'modifyTimestamp',
+                   'pwdChangedTime',
+                   'pwdFailureTime'
                    ]
 
 AFFILIATION = (

@@ -3,8 +3,7 @@ import io
 from django.conf import settings
 from django.test import TestCase
 from ldap_peoples.models import LdapAcademiaUser
-from ldap_peoples.ldap_utils import (import_entries_from_json,
-                                     import_entries_from_ldif)
+from ldap_peoples.serializers import LdapImportExport
 
 _test_uid = 'jimmy89234_yWHO!'
 _test_guy = { "uid": "jimmy89234_yWHO!",
@@ -61,7 +60,7 @@ class LdapAcademiaUserTestCase(TestCase):
         out.write(d.ldif())
         out.seek(0)
         d.delete()
-        imp = import_entries_from_ldif(out)
+        imp = LdapImportExport.import_entries_from_ldif(out)
         self.assertIs(imp, True)
 
     def test_json_import_export(self):
@@ -70,7 +69,7 @@ class LdapAcademiaUserTestCase(TestCase):
         out.write(d.json_ext())
         out.seek(0)
         d.delete()
-        imp = import_entries_from_json(out)
+        imp = LdapImportExport.import_entries_from_json(out)
         self.assertIs(imp, True)
 
     def test_clean(self):

@@ -20,7 +20,6 @@ from ldapdb.models.fields import (ExactLookup,
                                   CharField,
                                   DateTimeField)
 from . form_fields  import (ListField as FormListField,
-                            # TimeStampField as FormTimeStampField,
                             EmailListField as FormEmailListField,
                             ScopedListField as FormScopedListField)
 from . widgets import (SplitJSONWidget,
@@ -74,7 +73,6 @@ class DateField(LdapFieldMixin, fields.DateField):
                 and not isinstance(value, datetime.datetime):
             raise ValueError(
                 'DateField can be only set to a datetime.date instance; got {}'.format(repr(value)))
-
         return value.strftime(self._date_format)
 
 
@@ -155,8 +153,7 @@ class ListField(LdapFieldMixin, fields.Field):
         defaults = {'form_class': FormListField,
                     'widget': SplitJSONWidget,
                     'help_text': self.help_text,
-                    'label': self.verbose_name.title(),
-                    }
+                    'label': self.verbose_name.title()}
         defaults.update(kwargs)
         return super().formfield(**defaults)
 

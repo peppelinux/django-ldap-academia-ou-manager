@@ -6,6 +6,7 @@ import time
 from django import forms
 from django.contrib.admin.widgets import AdminSplitDateTime
 from django.conf import settings
+from django.core import checks, exceptions, validators
 from django.db.models import fields, lookups
 from django.utils import timezone
 from ldapdb.models.fields import (ExactLookup,
@@ -19,7 +20,6 @@ from ldapdb.models.fields import (ExactLookup,
                                   CharField,
                                   DateTimeField)
 from . form_fields  import (ListField as FormListField,
-                            # TimeStampField as FormTimeStampField,
                             EmailListField as FormEmailListField,
                             ScopedListField as FormScopedListField)
 from . widgets import (SplitJSONWidget,
@@ -28,6 +28,55 @@ from . widgets import (SplitJSONWidget,
                        eduPersonAffiliationWidget,
                        eduPersonScopedAffiliationWidget,
                        SchacHomeOrganizationTypeWidget)
+
+class DateField(LdapFieldMixin, fields.DateField):
+    """
+    A text field containing date, in specified format.
+    The format can be specified as 'format' argument, as strptime()
+    format string. It defaults to ISO8601 (%Y-%m-%d).
+
+    Note: 'lte' and 'gte' lookups are done string-wise. Therefore,
+    they will onlywork correctly on Y-m-d dates with constant
+    component widths.
+    """
+
+    def __init__(self, *args, **kwargs):
+        if 'format' in kwargs:
+            self._date_format = kwargs.pop('format')
+        else:
+            self._date_format = '%Y-%m-%d'
+        super(DateField, self).__init__(*args, **kwargs)
+
+    def from_ldap(self, value, connection):
+        if len(value) == 0:
+            return None
+        else:
+            return datetime.datetime.strptime(value[0].decode(connection.charset),
+                                              self._date_format).date()
+
+    def to_python(self, value):
+        if value is None:
+            return value
+
+        if isinstance(value, list):
+            value = value[0]
+
+        if isinstance(value, str):
+            value = datetime.datetime.strptime(value, self._date_format).date()
+
+        return value
+
+    def get_prep_value(self, value):
+        value = super(DateField, self).get_prep_value(value)
+        value = self.to_python(value)
+        if not isinstance(value, datetime.date) \
+                and not isinstance(value, datetime.datetime):
+            raise ValueError(
+                'DateField can be only set to a datetime.date instance; got {}'.format(repr(value)))
+        return value.strftime(self._date_format)
+
+
+DateField.register_lookup(ExactLookup)
 
 
 class TimeStampField(fields.DateTimeField):
@@ -42,39 +91,54 @@ class TimeStampField(fields.DateTimeField):
             self._date_format = settings.LDAP_DATETIME_FORMAT
         super(TimeStampField, self).__init__(*args, **kwargs)
 
+    def to_python(self, value):
+        if value is None:
+            return value
+
+        if isinstance(value, list):
+            value = value[0]
+
+        if type(value) == bytes:
+            value = value.decode(settings.DEFAULT_CHARSET)
+
+        if isinstance(value, str):
+            if '.' in value:
+                time_struct = time.strptime(value, settings.LDAP_DATETIME_MILLISECONDS_FORMAT)
+            else:
+                time_struct = time.strptime(value, settings.LDAP_DATETIME_FORMAT)
+            timestamp = time.mktime(time_struct)
+            value = timezone.datetime.fromtimestamp(timestamp)
+
+        if isinstance(value, datetime.datetime):
+            if settings.USE_TZ and timezone.is_naive(value):
+                # Convert aware datetimes to the default time zone
+                # before casting them to dates (#17742).
+                default_timezone = timezone.get_default_timezone()
+                value = timezone.make_aware(value, default_timezone)
+            return value
+        else:
+            raise exceptions.ValidationError(
+                self.error_messages['invalid'],
+                code='invalid',
+                params={'value': value},
+            )
+
     def from_ldap(self, value, connection):
         if not value:
             return None
         else:
-            if b'.' in value[0]:
-                time_struct = time.strptime(value[0].decode(connection.charset),
-                                                            settings.LDAP_DATETIME_MILLISECONDS_FORMAT)
-            else:
-                time_struct = time.strptime(value[0].decode(connection.charset),
-                                                            settings.LDAP_DATETIME_FORMAT)
-            timestamp = time.mktime(time_struct)
-            value = timezone.datetime.fromtimestamp(timestamp)
-            if settings.USE_TZ:
-                default_timezone = timezone.get_default_timezone()
-                value = timezone.make_aware(value, timezone.pytz.utc)
-                value = value.astimezone(default_timezone)
-            return value
+            return self.to_python(value)
 
     def get_db_prep_save(self, value, connection):
         if not value:
             return None
-        if type(value) == bytes:
-            value = value.decode(connection.charset)
-        if not isinstance(value, datetime.date) \
-                and not isinstance(value, datetime.datetime):
-                try:
-                    return datetime.datetime.strptime(value,
-                                                      self._date_format).date()
-                except:
-                    raise ValueError(
-                        'DateField can be only set to a datetime.date instance')
-        timestamps_value = value.strftime(self._date_format).encode(connection.charset)
-        return [timestamps_value]
+        if isinstance(value, datetime.datetime) or isinstance(value, datetime.date):
+            value = value
+        else:
+            value = self.to_python(value)
+
+        value = value.strftime(settings.LDAP_DATETIME_FORMAT)
+        return [value.encode(connection.charset)]
 
 
 class ListField(LdapFieldMixin, fields.Field):
@@ -89,8 +153,7 @@ class ListField(LdapFieldMixin, fields.Field):
         defaults = {'form_class': FormListField,
                     'widget': SplitJSONWidget,
                     'help_text': self.help_text,
-                    'label': self.verbose_name.title(),
-                    }
+                    'label': self.verbose_name.title()}
         defaults.update(kwargs)
         return super().formfield(**defaults)
 

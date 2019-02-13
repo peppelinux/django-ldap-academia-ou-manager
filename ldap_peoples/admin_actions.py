@@ -15,7 +15,6 @@ def export_as_json(modeladmin, request, queryset):
     response = HttpResponse(content_type="application/force-download")
     fname = 'ldapuser_export_{}.json'.format(timezone.localtime().isoformat())
     response['Content-Disposition'] = 'attachment; filename={}'.format(fname)
-    # serializers.serialize("json", queryset, stream=response, indent=2)
     app_name = queryset.model._meta.app_label
     model_name = queryset.model.__name__
     d = {'app': app_name, 'model': model_name, 'entries': []}
@@ -35,7 +34,7 @@ def export_as_ldif(modeladmin, request, queryset):
     else:
         response['Content-Disposition'] = attach_str.format(t)
     for i in queryset:
-        response.content += i.ldiff().encode(settings.FILE_CHARSET)
+        response.content += i.ldif().encode(settings.FILE_CHARSET)
     return response
 export_as_ldif.short_description = _("Export as LDIF")
 

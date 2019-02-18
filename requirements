@@ -1,0 +1,14 @@
+bcrypt
+# nt hashing dep
+passlib
+
+# ldap storage
+# apt install libsasl2-dev python3-dev libldap2-dev libssl-dev
+#git+https://github.com/django-ldapdb/django-ldapdb.git
+git+https://github.com/peppelinux/python-ldap.git
+git+https://github.com/peppelinux/django-ldapdb.git
+
+# rangefilter
+git+https://github.com/silentsokolov/django-admin-rangefilter.git
+
+chardet

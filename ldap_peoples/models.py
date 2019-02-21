@@ -10,11 +10,11 @@ from django.utils import timezone
 from django.db import models
 from django.utils.translation import gettext as _
 from ldapdb.models.fields import (CharField,
-                                  # DateField,
                                   DateTimeField,
                                   TimestampField,
                                   ImageField,
                                   IntegerField)
+from pySSHA import ssha
 from .hash_functions import encode_secret
 from . ldap_utils import (parse_generalized_time,
                           parse_pwdfailure_time,
@@ -204,7 +204,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     pwdAccountLockedTime = CharField(db_column='pwdAccountLockedTime')
     pwdFailureTime = MultiValueField(db_column='pwdFailureTime', editable=False)
     pwdChangedTime = TimeStampField(db_column='pwdChangedTime', editable=False)
-
+    pwdHistory = ListField(db_column='pwdHistory', editable=False)
 
     class Meta:
         verbose_name = _('LDAP Academia User')
@@ -213,9 +213,10 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     def distinguished_name(self):
         return 'uid={},{}'.format(self.uid, self.base_dn)
 
-    def pwd_changed(self):
-        if self.pwdChangedTime:
-            return parse_generalized_time(self.pwdChangedTime)
+    # DEPRECATED
+    # def pwd_changed(self):
+        # if self.pwdChangedTime:
+            # return parse_generalized_time(self.pwdChangedTime)
 
     def is_active(self):
         if self.pwdAccountLockedTime: return False
@@ -301,6 +302,20 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         if membership:
             # return os.linesep.join([m.dn for m in membership])
             return [i.cn for i in membership]
+
+    def check_pwdHistory(self, password):
+        """
+        if returns True means that this password was already used in the past
+        """
+        res = None
+        for e in self.pwdHistory:
+            old_pwd = e.split('#')[-1]
+            res = ssha.checkPassword(password,
+                                     old_pwd,
+                                     settings.LDAP_PASSWORD_SALT_SIZE,
+                                     'suffixed')
+            if res: break
+        return res
 
     def set_password(self, password, old_password=None):
         ldap_conn = connections['ldap']

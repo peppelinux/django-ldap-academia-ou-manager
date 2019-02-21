@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.admin.models import LogEntry
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
+from django.utils.html import mark_safe
 
 from unical_template.admin import ReadOnlyAdmin
 from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
@@ -88,7 +89,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                        'failure_times',
                        'pwdChangedTime',
                        #'pwd_changed'
-
+                       'pwdHistory_repr',
                        'userPassword',
                        'sambaNTPassword',
                        )
@@ -137,13 +138,10 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
             'classes': ('collapse',),
             'fields': (
                         (## 'pwdAccountLockedTime',
-                         'locked_time',
-                        ),
+                         'locked_time',),
                         ('failure_times',),
-                        (
-                        ## 'pwd_changed',
-                        'pwdChangedTime',
-                        )
+                        ('pwdChangedTime',),
+                        'pwdHistory_repr',
                         ),
                       }
         ),
@@ -169,6 +167,9 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                       }
         )
     )
+
+    def pwdHistory_repr(self, obj):
+        return mark_safe('<br>'.join(obj.pwdHistory))
 
     def get_emails_as_ul(self, obj):
         value = get_values_as_html_ul(obj.mail)

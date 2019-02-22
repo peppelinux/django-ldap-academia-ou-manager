@@ -4,8 +4,10 @@ from base64 import encodestring
 try:
     from django.conf import settings
     _CHARSET = settings.DEFAULT_CHARSET
+    _LDAP_SALT_LENGHT = settings.LDAP_PASSWORD_SALT_SIZE
 except:
     _CHARSET = 'utf-8'
+    _LDAP_SALT_LENGHT = 8
 from hashlib import (sha1,
                      sha256,
                      sha384,
@@ -25,7 +27,6 @@ from passlib.hash import (ldap_plaintext,
 from os import urandom
 
 # how many bytes the salt is long
-_LDAP_SALT_LENGHT = 8
 
 def encode_secret(enc, new_value=None):
     """

@@ -7,6 +7,7 @@ passlib
 #git+https://github.com/django-ldapdb/django-ldapdb.git
 git+https://github.com/peppelinux/python-ldap.git
 git+https://github.com/peppelinux/django-ldapdb.git
+git+https://github.com/peppelinux/pySSHA-slapd.git
 
 # rangefilter
 git+https://github.com/silentsokolov/django-admin-rangefilter.git

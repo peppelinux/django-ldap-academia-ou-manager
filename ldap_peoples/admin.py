@@ -69,7 +69,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                    ('createTimestamp', DateRangeFilter),
                    ('modifyTimestamp', DateTimeRangeFilter),
                    ('pwdChangedTime', DateTimeRangeFilter),
-
+                   ('schacExpiryDate', DateTimeRangeFilter),
                   )
     search_fields = ('uid',
                      'givenName',

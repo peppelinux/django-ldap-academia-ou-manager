@@ -18,7 +18,8 @@ from pySSHA import ssha
 from .hash_functions import encode_secret
 from . ldap_utils import (parse_generalized_time,
                           parse_pwdfailure_time,
-                          get_expiration_date)
+                          get_expiration_date,
+                          format_generalized_time)
 from . model_fields import (TimeStampField,
                             DateField,
                             MultiValueField,
@@ -212,11 +213,6 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
 
     def distinguished_name(self):
         return 'uid={},{}'.format(self.uid, self.base_dn)
-
-    # DEPRECATED
-    # def pwd_changed(self):
-        # if self.pwdChangedTime:
-            # return parse_generalized_time(self.pwdChangedTime)
 
     def is_active(self):
         if self.pwdAccountLockedTime: return False

@@ -17,7 +17,6 @@ LDAP_PASSWORD_SALT_SIZE = 8
 # an account must be renewed every 6 months
 SHAC_EXPIRY_DURATION_DAYS = 183
 
-
 # THIS ONLY USED WITH encode_password_custom()
 # if pw-sha2 overlay is present on the server additional passwd type could be used
 PWSHA2_OVERLAY = True

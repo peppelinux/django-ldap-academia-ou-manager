@@ -1,7 +1,6 @@
 Django admin LDAP manager for Academia OU
 -----------------------------------------
-Django Admin manager for Academia Users, usable with a OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema.
-It also needs PPolicy overlay.
+Django Admin manager for Academia Users, usable with a OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema. It also needs PPolicy overlay and some other schema as described as follow.
 
 References
 ----------
@@ -156,7 +155,9 @@ TODO
  - We use custom django-ldapdb fork because readonly fields like createTimestamps and other are fautly on save in the official django-ldapdb repo. [See related PR](https://github.com/django-ldapdb/django-ldapdb/pull/185);
  - ListFields doesn't handle properly **verbose_name**. It depends on the form class, we use our fork for elude this;
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;
- - too many connection from django-ldapdb backends, fixed in forked django-ldapdb version as follow:
+
+** stupid thing**
+too many connection from django-ldapdb backends could be fixed in django-ldapdb but it will not work in multi threaded environment such wsgi context!
 
 ````
 # backeds.ldap.base#237

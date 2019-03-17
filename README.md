@@ -156,8 +156,8 @@ TODO
  - ListFields doesn't handle properly **verbose_name**. It depends on the form class, we use our fork for elude this;
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;
 
-** stupid thing**
-too many connection from django-ldapdb backends could be fixed in django-ldapdb but it will not work in multi threaded environment such wsgi context!
+**stupid thing**
+too many connection from django-ldapdb backends makes slapd logs huge. This could be fixed in django-ldapdb as follow BUT we cannot do this otherwise it will not work in multi threaded environment such wsgi context!
 
 ````
 # backeds.ldap.base#237

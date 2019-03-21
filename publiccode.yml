@@ -1,0 +1,89 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+name: django-ldap-academia-ou-manager
+releaseDate: '2019-02-18'
+url: 'https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager'
+developmentStatus: stable
+landingURL: 'https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager'
+softwareType: standalone/web
+platforms:
+  - linux
+categories:
+  - accounting
+maintenance:
+  type: community
+  contacts:
+    - name: Giuseppe De Marco
+      email: giuseppe.demarco@unical.it
+      affiliation: unical.it
+legal:
+  license: BSD-2-Clause
+  authorsFile: AUTHORS
+localisation:
+  availableLanguages:
+    - it
+it:
+  countryExtensionVersion: '0.2'
+description:
+  it:
+    genericName: Django admin LDAP manager for Acade
+    shortDescription: Django admin LDAP manager for Academia OU
+    longDescription: >
+      ## **Django admin LDAP manager for Academia OU**
+
+
+      Django Admin manager for Academia Users, usable with a OpenLDAP Server
+      configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema.
+      It also needs PPolicy overlay. and other modules and overlay as configured
+      in:
+      [https://github.com/peppelinux/ansible-slapd-eduperson2016](https://github.com/peppelinux/ansible-slapd-eduperson2016),
+      as follow:
+
+
+      ​
+
+
+      - MDB backend
+
+      - eduperson2016 schema
+
+      - schac-2015 schema
+
+      - memberOf overlay
+
+      - ppolicy overlay
+
+      - pw-sha2 module for SSHA-512, SSHA-384, SSHA-256, SHA-512, SHA-384 and
+      SHA-256 passwords
+
+      - Monitor backend
+
+      - Unique overlay (default field: mail)
+
+      - smbk5pwd overlay
+
+      - accesslog module (for delta replications)
+
+      - syncprov (synrepl) with or without delta replication (delta can be
+      enabled together with accesslog)
+
+      - Unit test for ACL and Password Policy overlay
+
+
+      ​
+
+
+      ​
+
+
+      ​
+    features:
+      - LDAP manager
+    screenshots:
+      - >-
+        https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager/blob/master/img/preview.png
+      - >-
+        https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager/blob/master/img/search.png

@@ -42,9 +42,16 @@ ansible-playbook -i "localhost," -c local playbook.yml
 Setup
 -----
 
-#### Create an environment directory and activate it
+#### Install dependencies
 ````
 apt install python3-dev python3-pip python3-setuptools
+apt install libsasl2-dev python-dev libldap2-dev libssl-dev
+pip install git+https://github.com/peppelinux/django-ldapdb.git
+pip install git+https://github.com/peppelinux/django-ldap-academia-ou-manager.git
+````
+
+#### Create an environment directory and activate it
+````
 pip3 install virtualenv
 
 export PROJ_NAME=django-ldap-academia-ou-manager

@@ -83,7 +83,8 @@ Read settings.py and settingslocal.py in the example folder.
 
 In settings.py do the following:
 
-- Add **ldap_peoples** in INSTALLED_APPS;
+- Add *ldap_peoples* in INSTALLED_APPS;
+- Add *rangefilter* in INSTALLED_APPS;
 - import default ldap_peoples settings as follows;
 - import default app url as follows;
 

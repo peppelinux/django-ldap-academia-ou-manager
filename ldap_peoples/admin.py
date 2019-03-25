@@ -5,7 +5,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
 from django.utils.html import mark_safe
 
-from unical_template.admin import ReadOnlyAdmin
 from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
 
 from .admin_actions import *
@@ -13,6 +12,44 @@ from .admin_utils import (get_values_as_html_ul,)
 from .forms import LdapAcademiaUserAdminForm, LdapGroupAdminMultiValuedForm #, FileImportActionForm
 from .hash_functions import encode_secret
 from .models import *
+
+
+class ReadOnlyAdmin(admin.ModelAdmin):
+    """
+    Disables all editing capabilities
+    """
+    def __init__(self, *args, **kwargs):
+        super(ReadOnlyAdmin, self).__init__(*args, **kwargs)
+        self.readonly_fields = [f.name for f in self.model._meta.fields]
+
+    def get_actions(self, request):
+        actions = super(ReadOnlyAdmin, self).get_actions(request)
+        if actions.get('delete_selected'):
+            del actions["delete_selected"]
+        return actions
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def save_model(self, request, obj, form, change):  # pragma: nocover
+        pass
+
+    def delete_model(self, request, obj):  # pragma: nocover
+        pass
+
+    def save_related(self, request, form, formsets, change):  # pragma: nocover
+        pass
+
+    def change_view(self, request, object_id, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_save_and_continue'] = False
+        extra_context['show_save'] = False
+        return super(ReadOnlyAdmin, self).change_view(request,
+                                                      object_id,
+                                                      extra_context=extra_context)
 
 
 @admin.register(LogEntry)

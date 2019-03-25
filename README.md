@@ -73,7 +73,7 @@ cd $PROJ_NAME
 
 ````
 # pip3 install git+https://github.com/peppelinux/django-ldapdb.git
-pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager --process-dependency-link
+pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager
 ````
 
 #### Edit settings.py

@@ -9,7 +9,6 @@ from django.db import connections
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from unical_accounts.models import User
 from . models import LdapAcademiaUser
 
 
@@ -46,7 +45,7 @@ class LdapAcademiaAuthBackend(ModelBackend):
 
         scoped_username = '@'.join((lu.uid, settings.LDAP_BASE_DOMAIN))
         try:
-            user = User.objects.get(username=scoped_username)
+            user = settings.AUTH_USER_MODEL.objects.get(username=scoped_username)
             # update attrs:
             if user.email != lu.mail[0]:
                 user.email = lu.mail[0]

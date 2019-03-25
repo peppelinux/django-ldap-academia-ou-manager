@@ -28,6 +28,5 @@ setup(name='django-ldap-academia-ou-manager',
                       'django-admin-rangefilter>=0.3.9',
                       'passlib>=1.7.1',
                       'chardet',
-                      'peppelinux_django_ldapdb==1.0',
                   ],
      )

@@ -1,7 +1,6 @@
 Django admin LDAP manager for Academia OU
 -----------------------------------------
-Django Admin manager for Academia Users, usable with a OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema.
-It also needs PPolicy overlay.
+Django Admin manager for Academia Users, usable with a OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema. It also needs PPolicy overlay and some other schema as described as follow.
 
 References
 ----------
@@ -43,9 +42,19 @@ ansible-playbook -i "localhost," -c local playbook.yml
 Setup
 -----
 
-#### Create an environment directory and activate it
+#### Install dependencies
 ````
 apt install python3-dev python3-pip python3-setuptools
+apt install libsasl2-dev python-dev libldap2-dev libssl-dev
+pip install git+https://github.com/peppelinux/django-ldapdb.git
+pip install git+https://github.com/peppelinux/pySSHA-slapd.git
+pip install pycountry
+pip install git+https://github.com/silentsokolov/django-admin-rangefilter.git
+pip install git+https://github.com/peppelinux/django-ldap-academia-ou-manager.git
+````
+
+#### Create an environment directory and activate it
+````
 pip3 install virtualenv
 
 export PROJ_NAME=django-ldap-academia-ou-manager
@@ -66,7 +75,7 @@ cd $PROJ_NAME
 
 ````
 # pip3 install git+https://github.com/peppelinux/django-ldapdb.git
-pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager --process-dependency-link
+pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager
 ````
 
 #### Edit settings.py
@@ -74,7 +83,8 @@ Read settings.py and settingslocal.py in the example folder.
 
 In settings.py do the following:
 
-- Add **ldap_peoples** in INSTALLED_APPS;
+- Add *ldap_peoples* in INSTALLED_APPS;
+- Add *rangefilter* in INSTALLED_APPS;
 - import default ldap_peoples settings as follows;
 - import default app url as follows;
 
@@ -156,7 +166,9 @@ TODO
  - We use custom django-ldapdb fork because readonly fields like createTimestamps and other are fautly on save in the official django-ldapdb repo. [See related PR](https://github.com/django-ldapdb/django-ldapdb/pull/185);
  - ListFields doesn't handle properly **verbose_name**. It depends on the form class, we use our fork for elude this;
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;
- - too many connection from django-ldapdb backends, fixed in forked django-ldapdb version as follow:
+
+**stupid thing**
+too many connection from django-ldapdb backends makes slapd logs huge. This could be fixed in django-ldapdb as follow BUT we cannot do this otherwise it will not work in multi threaded environment such wsgi context!
 
 ````
 # backeds.ldap.base#237

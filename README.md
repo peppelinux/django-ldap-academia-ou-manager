@@ -48,6 +48,8 @@ apt install python3-dev python3-pip python3-setuptools
 apt install libsasl2-dev python-dev libldap2-dev libssl-dev
 pip install git+https://github.com/peppelinux/django-ldapdb.git
 pip install git+https://github.com/peppelinux/pySSHA-slapd.git
+pip install pycountry
+pip install git+https://github.com/silentsokolov/django-admin-rangefilter.git
 pip install git+https://github.com/peppelinux/django-ldap-academia-ou-manager.git
 ````
 

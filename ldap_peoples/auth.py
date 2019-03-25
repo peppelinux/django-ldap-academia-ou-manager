@@ -51,11 +51,11 @@ class LdapAcademiaAuthBackend(ModelBackend):
                 user.email = lu.mail[0]
                 user.save()
         except Exception as e:
-            user = User.objects.create(dn=lu.dn,
-                                       username=scoped_username,
-                                       email=lu.mail[0],
-                                       first_name=lu.cn,
-                                       last_name=lu.sn)
+            user = settings.AUTH_USER_MODEL.objects.create(dn=lu.dn,
+                                                           username=scoped_username,
+                                                           email=lu.mail[0],
+                                                           first_name=lu.cn,
+                                                           last_name=lu.sn)
 
         # disconnect already created session, only a session per user is allowed
         # get all the active sessions

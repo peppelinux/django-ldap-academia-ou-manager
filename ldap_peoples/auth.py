@@ -1,6 +1,7 @@
 import ldap
 from django.conf import settings
 # from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.sessions.models import Session
 # from django.contrib.auth.decorators import user_passes_test
@@ -45,13 +46,13 @@ class LdapAcademiaAuthBackend(ModelBackend):
 
         scoped_username = '@'.join((lu.uid, settings.LDAP_BASE_DOMAIN))
         try:
-            user = settings.AUTH_USER_MODEL.objects.get(username=scoped_username)
+            user = get_user_model().objects.get(username=scoped_username)
             # update attrs:
             if user.email != lu.mail[0]:
                 user.email = lu.mail[0]
                 user.save()
         except Exception as e:
-            user = settings.AUTH_USER_MODEL.objects.create(dn=lu.dn,
+            user = get_user_model().objects.create(dn=lu.dn,
                                                            username=scoped_username,
                                                            email=lu.mail[0],
                                                            first_name=lu.cn,

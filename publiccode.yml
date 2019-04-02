@@ -21,7 +21,6 @@ maintenance:
       affiliation: unical.it
 legal:
   license: BSD-2-Clause
-  authorsFile: AUTHORS
 localisation:
   availableLanguages:
     - it

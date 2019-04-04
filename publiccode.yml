@@ -22,6 +22,7 @@ maintenance:
 legal:
   license: BSD-2-Clause
 localisation:
+  localisationReady: no
   availableLanguages:
     - it
 it:

@@ -27,6 +27,8 @@ localisation:
     - it
 it:
   countryExtensionVersion: '0.2'
+    riuso:
+    codiceIPA: unical
 description:
   it:
     genericName: Django admin LDAP manager for Acade

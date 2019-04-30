@@ -27,7 +27,7 @@ localisation:
     - it
 it:
   countryExtensionVersion: '0.2'
-    riuso:
+  riuso:
     codiceIPA: unical
 description:
   it:

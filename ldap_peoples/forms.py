@@ -1,5 +1,7 @@
-import re
 import datetime
+import logging
+import re
+
 
 from copy import copy
 from django import forms
@@ -20,7 +22,8 @@ from . widgets import (SplitJSONWidget,
                        eduPersonAffiliationWidget,
                        eduPersonScopedAffiliationWidget,
                        SchacHomeOrganizationTypeWidget)
-from pprint import pprint
+
+logger = logging.getLogger(__name__)
 
 
 class LdapMultiValuedForm(forms.ModelForm):
@@ -41,7 +44,7 @@ class LdapMultiValuedForm(forms.ModelForm):
                         msg = _('{} is not a valid email format!')
                         self.add_error(field,  msg.format(self.data[key]))
                 elif isinstance(self.fields[field], ScopedListField):
-                    if not re.match('[a-zA-Z]+@[a-zA-Z]+', self.data[key]):
+                    if not re.match('.+@.+', self.data[key]):
                         msg = _('{} is not valid: please use "value@scope"')
                         self.add_error(field,  msg.format(self.data[key]))
         return value_list
@@ -51,7 +54,9 @@ class LdapMultiValuedForm(forms.ModelForm):
         data = []
         for name, field in self.fields.items():
             prefixed_name = self.add_prefix(name)
-            data_value = field.widget.value_from_datadict(self.data, self.files, prefixed_name)
+            data_value = field.widget.value_from_datadict(self.data,
+                                                          self.files,
+                                                          prefixed_name)
             if not field.show_hidden_initial:
                 # Use the BoundField's initial as this is the value passed to
                 # the widget.
@@ -61,7 +66,8 @@ class LdapMultiValuedForm(forms.ModelForm):
                 hidden_widget = field.hidden_widget()
                 try:
                     initial_value = field.to_python(hidden_widget.value_from_datadict(
-                                                    self.data, self.files, initial_prefixed_name))
+                                                    self.data, self.files,
+                                                    initial_prefixed_name))
                 except ValidationError:
                     # Always assume data has changed if validation fails.
                     data.append(name)
@@ -111,8 +117,6 @@ class LdapUserAdminPasswordForm(LdapUserAdminPasswordBaseForm):
 class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseForm):
     # define your customization here
     # schacPersonalUniqueID = forms.CharField(required=False, widget=SchacPersonalUniqueIdWidget)
-    pass
-
 
     def clean_schacExpiryDate(self):
         """
@@ -124,15 +128,15 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
         This is noted in the custom validation docs:
         https://docs.djangoproject.com/en/2.1/ref/forms/validation/
         """
-        datestr = ' '.join((self.data['schacExpiryDate_0'], self.data['schacExpiryDate_1']))
+        datestr = ' '.join((self.data['schacExpiryDate_0'],
+                            self.data['schacExpiryDate_1']))
         value = None
         for date_format in settings.DATETIME_INPUT_FORMATS:
             try:
                 value = datetime.datetime.strptime(datestr, date_format)
                 break
-            except Exception as e:
-                print(e)
-                pass
+            except ValueError as e:
+                logger.debug('clean_schacExpiryDate: {}'.format(e))
         # if not value: return
         # value = timezone.make_aware(value, timezone.pytz.utc)
         self.cleaned_data['schacExpiryDate'] = value
@@ -141,7 +145,7 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
     def clean_MultiValueWidget(self, field, data,
                                default_prefix, count,
                                sep=':'):
-        # print(field)
+        logger.debug(field)
         regexp = '{}_(?P<order>\d+)_\[(?P<key>\d+)\]'.format(field)
         value_list = []
         field_dict = {}
@@ -169,7 +173,7 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
                 cnt = 0
                 field_group = [default_prefix,] if default_prefix else []
                 field_group.append(row_dict[item])
-                # print(field_dict[item], cnt, field_group, value_list)
+                #print(field_dict[item], cnt, field_group, value_list)
         return value_list
 
     def clean_eduPersonAffiliation_custom(self, field, data):
@@ -213,7 +217,6 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
         Detect for any ListField widget
         """
         #super().clean()
-        # pprint(self.__dict__)
         data = copy(self.data)
         for field in self.fields:
             if isinstance(self.fields[field].widget, SchacPersonalUniqueCodeWidget):
@@ -241,14 +244,15 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
                 data[field] = self.clean_ListField(field, data)
             elif field == 'schacDateOfBirth':
                 # per generalizzare questo agire nel metodo to_python del field
+                date_in = None
                 if not data[field]:
                     data[field] = None
+                    continue
                 for date_format in settings.DATE_INPUT_FORMATS:
-                    date_in = None
                     try:
                         date_in = datetime.datetime.strptime(data[field], date_format)
-                    except Exception as e:
-                        print(date_format, e)
+                    except ValueError as e:
+                        logger.debug(date_format, e)
                         pass
                     if date_in:
                         data[field] = date_in

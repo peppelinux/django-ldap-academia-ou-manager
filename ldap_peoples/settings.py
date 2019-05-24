@@ -63,7 +63,7 @@ SECRET_FIELD_VALIDATORS = {'regexp_lowercase': '[a-z]+',
                            'regexp_number': '[0-9]+',
                            'regexp_special': '[\!\%\-_+=\[\]{\}\:\,\.\?\<\>\(\)\;]+'}
 
-EEPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z]+'
+EPPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z\-\.\_]+'
 
 # https://www.internet2.edu/products-services/trust-identity/mace-registries/urnmace-namespace/
 SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX = 'urn:schac:personalUniqueCode'

@@ -258,7 +258,7 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
             elif field == 'schacExpiryDate':
                 data[field] = self.clean_schacExpiryDate()
             elif field == 'eduPersonPrincipalName':
-                if not re.match(settings.EEPN_VALIDATOR, data[field]):
+                if not re.match(settings.EPPN_VALIDATOR, data[field]):
                     msg = _('{} is not valid: please use "value@scope"')
                     self.add_error(field,  msg.format(data[field]))
 

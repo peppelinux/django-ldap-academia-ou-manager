@@ -285,6 +285,7 @@ eduPersonScopedAffiliationListField.register_lookup(ListContainsLookup)
 eduPersonScopedAffiliationListField.register_lookup(ExactLookup)
 eduPersonScopedAffiliationListField.register_lookup(IContainsLookup)
 
+
 class MultiValueField(LdapFieldMixin, fields.TextField):
 
     multi_valued_field = True

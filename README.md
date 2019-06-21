@@ -1,6 +1,6 @@
 Django admin LDAP manager for Academia OU
 -----------------------------------------
-Django Admin manager for Academia Users, usable with a OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema. It also needs PPolicy overlay and some other schema as described as follow.
+Django Admin manager for Academia Users, usable with an OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema. It also needs PPolicy overlay and some other schemas as described as follow.
 
 References
 ----------
@@ -42,6 +42,17 @@ ansible-playbook -i "localhost," -c local playbook.yml
 Setup
 -----
 
+#### Create an virtual environment and activate it
+````
+pip3 install virtualenv
+
+export PROJ_NAME=django-ldap-academia-ou-manager
+export DEST_DIR=$PROJ_NAME.env
+virtualenv -p python3 $DEST_DIR
+source $dest_dir/bin/activate
+pip3 install django
+````
+
 #### Install dependencies
 ````
 apt install python3-dev python3-pip python3-setuptools
@@ -53,17 +64,6 @@ pip install git+https://github.com/silentsokolov/django-admin-rangefilter.git
 pip install git+https://github.com/peppelinux/django-ldap-academia-ou-manager.git
 ````
 
-#### Create an environment directory and activate it
-````
-pip3 install virtualenv
-
-export PROJ_NAME=django-ldap-academia-ou-manager
-export DEST_DIR=$PROJ_NAME.env
-virtualenv -p python3 $DEST_DIR
-source $dest_dir/bin/activate
-pip3 install django
-````
-
 #### Create a project
 ````
 django-admin startproject $PROJ_NAME
@@ -71,7 +71,7 @@ cd $PROJ_NAME
 ````
 
 #### Install the app
-**Note:** It uses a django-ldapdb fork to handle readonly (non editable) fields. This still waiting form merge in official django-ldap repository.
+**Note:** It uses a django-ldapdb fork to handle readonly (non editable) fields.
 
 ````
 # pip3 install git+https://github.com/peppelinux/django-ldapdb.git
@@ -168,7 +168,7 @@ TODO
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;
 
 **stupid thing**
-too many connection from django-ldapdb backends makes slapd logs huge. This could be fixed in django-ldapdb as follow BUT we cannot do this otherwise it will not work in multi threaded environment such wsgi context!
+too many connection from django-ldapdb backends makes slapd logs pretty huge. This could be fixed in django-ldapdb as follow BUT we cannot do this otherwise it will not work in multi threaded environment like wsgi context.
 
 ````
 # backeds.ldap.base#237

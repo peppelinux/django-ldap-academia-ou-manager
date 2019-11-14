@@ -342,10 +342,10 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         return self.userPassword
 
     def reset_schacExpiryDate(self):
-        self.schaExpiryDate = timezone.localtime()+\
-                              timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
+        self.schacExpiryDate = timezone.localtime()+\
+                               timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
         self.save()
-        return self.schaExpiryDate
+        return self.schacExpiryDate
 
     # def save(self, *args, **kwargs):
         # DEPRECATED

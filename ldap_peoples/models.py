@@ -33,6 +33,7 @@ from . model_fields import (TimeStampField,
                             SchacHomeOrganizationTypeListField)
 from . serializers import LdapSerializer
 
+
 class LdapGroup(ldapdb.models.Model):
     """
     Class for representing an LDAP group entry.
@@ -40,7 +41,7 @@ class LdapGroup(ldapdb.models.Model):
     http://www.openldap.org/software/man.cgi?query=slapo-memberof&sektion=5&apropos=0&manpath=OpenLDAP+2.4-Release
     """
     # LDAP meta-data
-    base_dn = "ou=groups,{}".format(settings.LDAP_BASEDN)
+    base_dn = "ou=groups,{}".format(settings.LDAP_PEOPLE_DN)
     object_classes = [
                       # 'posixGroup',
                       'groupOfNames']
@@ -82,8 +83,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     Class for representing an LDAP user entry.
     """
     # LDAP meta-data
-    base_dn = "ou={},{}".format(settings.LDAP_OU,
-                                settings.LDAP_BASEDN)
+    base_dn = "{}".format(settings.LDAP_PEOPLE_DN)
 
     object_classes = ['inetOrgPerson',
                       'organizationalPerson',
@@ -342,10 +342,10 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         return self.userPassword
 
     def reset_schacExpiryDate(self):
-        self.schaExpiryDate = timezone.localtime()+\
-                              timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
+        self.schacExpiryDate = timezone.localtime()+\
+                               timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
         self.save()
-        return self.schaExpiryDate
+        return self.schacExpiryDate
 
     # def save(self, *args, **kwargs):
         # DEPRECATED

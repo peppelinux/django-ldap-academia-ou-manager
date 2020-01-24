@@ -1,7 +1,6 @@
 Django admin LDAP manager for Academia OU
 -----------------------------------------
-Django Admin manager for Academia Users, usable with a OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema.
-It also needs PPolicy overlay.
+Django Admin manager for Academia Users, usable with an OpenLDAP Server configured with eduPerson, SCHAC (SCHema for ACademia) and Samba schema. It also needs PPolicy overlay and some other schemas as described as follow.
 
 References
 ----------
@@ -43,9 +42,8 @@ ansible-playbook -i "localhost," -c local playbook.yml
 Setup
 -----
 
-#### Create an environment directory and activate it
+#### Create an virtual environment and activate it
 ````
-apt install python3-dev python3-pip python3-setuptools
 pip3 install virtualenv
 
 export PROJ_NAME=django-ldap-academia-ou-manager
@@ -55,6 +53,17 @@ source $dest_dir/bin/activate
 pip3 install django
 ````
 
+#### Install dependencies
+````
+apt install python3-dev python3-pip python3-setuptools
+apt install libsasl2-dev python-dev libldap2-dev libssl-dev
+pip install git+https://github.com/peppelinux/django-ldapdb.git
+pip install git+https://github.com/peppelinux/pySSHA-slapd.git
+pip install pycountry
+pip install git+https://github.com/silentsokolov/django-admin-rangefilter.git
+pip install git+https://github.com/peppelinux/django-ldap-academia-ou-manager.git
+````
+
 #### Create a project
 ````
 django-admin startproject $PROJ_NAME
@@ -62,11 +71,11 @@ cd $PROJ_NAME
 ````
 
 #### Install the app
-**Note:** It uses a django-ldapdb fork to handle readonly (non editable) fields. This still waiting form merge in official django-ldap repository.
+**Note:** It uses a django-ldapdb fork to handle readonly (non editable) fields.
 
 ````
 # pip3 install git+https://github.com/peppelinux/django-ldapdb.git
-pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager --process-dependency-link
+pip3 install git+https://github.com/peppelinux/django-ldap-academia-ou-manager
 ````
 
 #### Edit settings.py
@@ -74,7 +83,8 @@ Read settings.py and settingslocal.py in the example folder.
 
 In settings.py do the following:
 
-- Add **ldap_peoples** in INSTALLED_APPS;
+- Add *ldap_peoples* in INSTALLED_APPS;
+- Add *rangefilter* in INSTALLED_APPS;
 - import default ldap_peoples settings as follows;
 - import default app url as follows;
 
@@ -156,26 +166,3 @@ TODO
  - We use custom django-ldapdb fork because readonly fields like createTimestamps and other are fautly on save in the official django-ldapdb repo. [See related PR](https://github.com/django-ldapdb/django-ldapdb/pull/185);
  - ListFields doesn't handle properly **verbose_name**. It depends on the form class, we use our fork for elude this;
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;
- - too many connection from django-ldapdb backends, fixed in forked django-ldapdb version as follow:
-
-````
-# backeds.ldap.base#237
-    def ensure_connection(self):
-        super(DatabaseWrapper, self).ensure_connection()
-
-        # Do a test bind, which will revive the connection if interrupted, or reconnect
-        conn_params = self.get_connection_params()
-
-        # this creates too many connections to LDAP server!
-        # try:
-            # self.connection.simple_bind_s(
-                # conn_params['bind_dn'],
-                # conn_params['bind_pw'],
-            # )
-            # print('ensure_connection. try')
-        # except ldap.SERVER_DOWN:
-
-        if not self.connection:
-            self.connect()
-            # print('ensure_connection. except')
-````

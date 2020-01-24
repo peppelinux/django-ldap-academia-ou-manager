@@ -55,12 +55,24 @@ LDAP_CONNECTION_OPTIONS = {
                             ldap.OPT_PROTOCOL_VERSION: 3,
                             ldap.OPT_DEBUG_LEVEL: 255,
                             ldap.OPT_X_TLS_CACERTFILE: LDAP_CACERT,
-                            
-                            # force /etc/ldap.conf configuration. 
+
+                            # a cached connection to be dropped an
+                            # recreated after it has been idle for the specified time
+                            ldap.OPT_TIMEOUT: 180,
+
+                            # used to check whether a socket is alive
+                            ldap.OPT_X_KEEPALIVE_IDLE: 120,
+                            ldap.OPT_X_KEEPALIVE_PROBES: 10,
+                            ldap.OPT_X_KEEPALIVE_INTERVAL: 30,
+
+                            ldap.OPT_NETWORK_TIMEOUT: 20,
+                            ldap.OPT_RESTART: True,
+
+                            # force /etc/ldap.conf configuration.
                             ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_DEMAND,
                             ldap.OPT_X_TLS: ldap.OPT_X_TLS_DEMAND,
                             ldap.OPT_X_TLS_DEMAND: True,
-                            
+
                             # ldap.OPT_X_TLS_REQUIRE_CERT: ldap.OPT_X_TLS_NEVER,
                             # ldap.OPT_X_TLS: ldap.OPT_X_TLS_NEVER,
                             # ldap.OPT_X_TLS_DEMAND: False,

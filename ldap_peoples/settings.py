@@ -63,7 +63,7 @@ SECRET_FIELD_VALIDATORS = {'regexp_lowercase': '[a-z]+',
                            'regexp_number': '[0-9]+',
                            'regexp_special': '[\!\%\-_+=\[\]{\}\:\,\.\?\<\>\(\)\;]+'}
 
-EEPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z]+'
+EPPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z\-\.\_]+'
 
 # https://www.internet2.edu/products-services/trust-identity/mace-registries/urnmace-namespace/
 SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX = 'urn:schac:personalUniqueCode'
@@ -78,7 +78,7 @@ SCHAC_PERSONALUNIQUEID_DEFAULT_PREFIX = 'urn:schac:personalUniqueID'
 SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE = 'IT'
 SCHAC_PERSONALUNIQUEID_DEFAULT_DOCUMENT_CODE = 'CF'
 SCHAC_PERSONALUNIQUEID_DOCUMENT_CODE = [SCHAC_PERSONALUNIQUEID_DEFAULT_DOCUMENT_CODE,
-                                        'ID', 'CI', 'NIF', 'FIC', 'NIN']
+                                        'ID', 'CI', 'TIN', 'NIF', 'FIC', 'NIN']
 
 RFC3339_DATE_FORMAT = "%Y%m%d"
 SCHAC_DATEOFBIRTH_FORMAT = RFC3339_DATE_FORMAT

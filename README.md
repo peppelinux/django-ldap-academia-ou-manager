@@ -154,7 +154,7 @@ u.delete()
 
 #### Unit test
 ````
-./manage.py test ldap_peoples.test.LdapAcademiaUserTestCase
+./manage.py test ldap_peoples.tests.LdapAcademiaUserTestCase
 ````
 
 TODO

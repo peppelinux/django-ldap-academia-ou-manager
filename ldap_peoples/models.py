@@ -41,7 +41,7 @@ class LdapGroup(ldapdb.models.Model):
     http://www.openldap.org/software/man.cgi?query=slapo-memberof&sektion=5&apropos=0&manpath=OpenLDAP+2.4-Release
     """
     # LDAP meta-data
-    base_dn = "ou=groups,{}".format(settings.LDAP_PEOPLE_DN)
+    base_dn = "ou=groups,{}".format(settings.LDAP_BASEDN)
     object_classes = [
                       # 'posixGroup',
                       'groupOfNames']
@@ -109,14 +109,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                     help_text="uid",
                     primary_key=True)
     cn = CharField(db_column='cn',
-                     verbose_name=_("Name"),
+                     verbose_name=_("Common Name"),
                      help_text='cn',
                      blank=False)
     givenName = CharField(db_column='givenName',
                           help_text="givenName",
                           verbose_name=_("First Name"),
                           blank=True, null=True)
-    sn = CharField("Final name", db_column='sn',
+    sn = CharField("Last name", db_column='sn',
                    help_text='sn',
                    blank=False)
     displayName = CharField(db_column='displayName',

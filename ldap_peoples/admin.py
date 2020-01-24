@@ -146,8 +146,8 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         (None, { 'fields' : (('uid',
                               'distinguished_name'
                               ),
-                             ('cn','sn',),
-                            ('givenName', 'displayName', ),
+                              ('givenName', 'sn', ),
+                              ('cn', 'displayName',),
                             ('mail', 'telephoneNumber'),
                             ),
                 }),

@@ -32,7 +32,6 @@ _test_guy = { "uid": "jimmy89234_yWHO!",
               ],
               "schacHomeOrganization": "testunical.it",
               "schacHomeOrganizationType": [
-                "urn:schac:homeOrganizationType:IT:educationInstitution",
                 "urn:schac:homeOrganizationType:IT:university"
               ],
               "schacPersonalUniqueID": [
@@ -47,6 +46,8 @@ _test_guy = { "uid": "jimmy89234_yWHO!",
 
 
 class LdapAcademiaUserTestCase(TestCase):
+    databases = ["default", "ldap"]
+
     def setUp(self):
         """test user creation"""
         d = LdapAcademiaUser.objects.filter(uid=_test_uid).first()

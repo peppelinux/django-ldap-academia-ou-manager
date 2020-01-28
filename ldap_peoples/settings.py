@@ -102,7 +102,6 @@ AFFILIATION = (
                 ('alum', 'alum'),
                 ('member', 'member'),
                 ('affiliate', 'affiliate'),
-                ('employee', 'employee'),
                 ('library-walk-in', 'library-walk-in'),
               )
 

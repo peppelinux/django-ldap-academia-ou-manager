@@ -101,7 +101,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                     # 'get_membership_as_ul',
                     'createTimestamp',
                     'modifyTimestamp')
-    list_filter = (
+    list_filter = ('title',
                    # 'pwdChangedTime', 'created', 'modified',
                    ('createTimestamp', DateRangeFilter),
                    ('modifyTimestamp', DateTimeRangeFilter),
@@ -148,6 +148,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                               ),
                               ('givenName', 'sn', ),
                               ('cn', 'displayName',),
+                              ('title'),
                             ('mail', 'telephoneNumber'),
                             ),
                 }),

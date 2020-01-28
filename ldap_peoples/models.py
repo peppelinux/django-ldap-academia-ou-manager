@@ -122,6 +122,9 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     displayName = CharField(db_column='displayName',
                             help_text='displayName',
                             blank=True, null=True)
+    title = ListField(db_column='title',
+                      help_text='title',
+                      blank=True, null=True)
     telephoneNumber = ListField(db_column='telephoneNumber',
                                 blank=True)
     mail = EmailListField(db_column='mail',

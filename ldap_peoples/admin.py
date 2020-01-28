@@ -151,8 +151,8 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                               ),
                               ('givenName', 'sn', ),
                               ('cn', 'displayName',),
-                              ('title'),
                             ('mail', 'telephoneNumber'),
+                            ('title'),
                             ),
                 }),
         ('Password', {

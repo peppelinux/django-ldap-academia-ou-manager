@@ -11,9 +11,9 @@ from django.db import models
 from django.utils.translation import gettext as _
 from ldapdb.models.fields import (CharField,
                                   DateTimeField,
-                                  TimestampField,
                                   ImageField,
-                                  IntegerField)
+                                  IntegerField,
+                                  TimestampField)
 from pySSHA import ssha
 from .hash_functions import encode_secret
 from . ldap_utils import (parse_generalized_time,
@@ -30,7 +30,8 @@ from . model_fields import (TimeStampField,
                             ScopedListField,
                             eduPersonAffiliationListField,
                             eduPersonScopedAffiliationListField,
-                            SchacHomeOrganizationTypeListField)
+                            SchacHomeOrganizationTypeListField,
+                            TitleField)
 from . serializers import LdapSerializer
 
 
@@ -122,9 +123,9 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     displayName = CharField(db_column='displayName',
                             help_text='displayName',
                             blank=True, null=True)
-    title = ListField(db_column='title',
-                      help_text='title',
-                      blank=True, null=True)
+    title = TitleField(db_column='title',
+                       help_text='title',
+                       blank=True, null=True)
     telephoneNumber = ListField(db_column='telephoneNumber',
                                 blank=True)
     mail = EmailListField(db_column='mail',

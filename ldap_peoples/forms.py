@@ -21,7 +21,8 @@ from . widgets import (SplitJSONWidget,
                        SchacPersonalUniqueCodeWidget,
                        eduPersonAffiliationWidget,
                        eduPersonScopedAffiliationWidget,
-                       SchacHomeOrganizationTypeWidget)
+                       SchacHomeOrganizationTypeWidget,
+                       TitleWidget)
 
 logger = logging.getLogger(__name__)
 
@@ -231,6 +232,9 @@ class LdapAcademiaUserAdminForm(LdapMultiValuedForm, LdapUserAdminPasswordBaseFo
                 data[field] = self.clean_MultiValueWidget(field, data,
                                                           None, 2, sep='')
             elif isinstance(self.fields[field].widget, eduPersonAffiliationWidget):
+                data[field] = self.clean_MultiValueWidget(field, data,
+                                                          None, 1)
+            elif isinstance(self.fields[field].widget, TitleWidget):
                 data[field] = self.clean_MultiValueWidget(field, data,
                                                           None, 1)
             elif isinstance(self.fields[field].widget, SchacPersonalUniqueIdWidget):

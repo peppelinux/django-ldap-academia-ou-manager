@@ -8,8 +8,10 @@ from django.utils.html import mark_safe
 from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
 
 from .admin_actions import *
+from .admin_filters import TitleListFilter
 from .admin_utils import (get_values_as_html_ul,)
-from .forms import LdapAcademiaUserAdminForm, LdapGroupAdminMultiValuedForm #, FileImportActionForm
+from .forms import (LdapAcademiaUserAdminForm,
+                    LdapGroupAdminMultiValuedForm) #, FileImportActionForm
 from .hash_functions import encode_secret
 from .models import *
 
@@ -101,7 +103,8 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                     # 'get_membership_as_ul',
                     'createTimestamp',
                     'modifyTimestamp')
-    list_filter = ('title',
+    list_filter = (
+                   TitleListFilter,
                    # 'pwdChangedTime', 'created', 'modified',
                    ('createTimestamp', DateRangeFilter),
                    ('modifyTimestamp', DateTimeRangeFilter),

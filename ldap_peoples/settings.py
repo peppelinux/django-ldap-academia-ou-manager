@@ -106,5 +106,10 @@ AFFILIATION = (
                 ('library-walk-in', 'library-walk-in'),
               )
 
+LDAP_PEOPLES_TITLES = (
+                        ('student', 'student'),
+                        ('employee', 'employee'),
+                      )
+
 # this option deactive previous auth sessions when a new LDAP auth occours
 MULTIPLE_USER_AUTH_SESSIONS = False

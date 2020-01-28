@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_admin_multiple_choice_list_filter',
+
     'rangefilter',
     'ldapdb',
     'ldap_peoples',

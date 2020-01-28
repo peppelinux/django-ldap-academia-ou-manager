@@ -27,7 +27,8 @@ from . widgets import (SplitJSONWidget,
                        SchacPersonalUniqueCodeWidget,
                        eduPersonAffiliationWidget,
                        eduPersonScopedAffiliationWidget,
-                       SchacHomeOrganizationTypeWidget)
+                       SchacHomeOrganizationTypeWidget,
+                       TitleWidget)
 
 class DateField(LdapFieldMixin, fields.DateField):
     """
@@ -161,6 +162,25 @@ class ListField(LdapFieldMixin, fields.Field):
 ListField.register_lookup(ListContainsLookup)
 ListField.register_lookup(ExactLookup)
 ListField.register_lookup(IContainsLookup)
+
+
+class TitleField(ListField):
+    binary_field = False
+    multi_valued_field = True
+
+
+    def formfield(self, **kwargs):
+        defaults = {'form_class': FormListField,
+                    'widget': TitleWidget,
+                    'help_text': self.help_text,
+                    'label': self.verbose_name.title()}
+        defaults.update(kwargs)
+        return super().formfield(**defaults)
+
+
+TitleField.register_lookup(ListContainsLookup)
+TitleField.register_lookup(ExactLookup)
+TitleField.register_lookup(IContainsLookup)
 
 
 class EmailListField(ListField):

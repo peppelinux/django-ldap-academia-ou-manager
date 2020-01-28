@@ -8,8 +8,10 @@ from django.utils.html import mark_safe
 from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
 
 from .admin_actions import *
+from .admin_filters import TitleListFilter
 from .admin_utils import (get_values_as_html_ul,)
-from .forms import LdapAcademiaUserAdminForm, LdapGroupAdminMultiValuedForm #, FileImportActionForm
+from .forms import (LdapAcademiaUserAdminForm,
+                    LdapGroupAdminMultiValuedForm) #, FileImportActionForm
 from .hash_functions import encode_secret
 from .models import *
 
@@ -102,6 +104,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                     'createTimestamp',
                     'modifyTimestamp')
     list_filter = (
+                   TitleListFilter,
                    # 'pwdChangedTime', 'created', 'modified',
                    ('createTimestamp', DateRangeFilter),
                    ('modifyTimestamp', DateTimeRangeFilter),
@@ -146,9 +149,10 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         (None, { 'fields' : (('uid',
                               'distinguished_name'
                               ),
-                             ('cn','sn',),
-                            ('givenName', 'displayName', ),
+                              ('givenName', 'sn', ),
+                              ('cn', 'displayName',),
                             ('mail', 'telephoneNumber'),
+                            ('title'),
                             ),
                 }),
         ('Password', {

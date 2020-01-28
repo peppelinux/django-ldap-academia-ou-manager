@@ -36,7 +36,7 @@ class SplitJSONWidgetBase(forms.Widget):
     source_label = '<label >Source data:</label> {}'
 
 
-class SplitJSONWidget(SplitJSONWidgetBase):    
+class SplitJSONWidget(SplitJSONWidgetBase):
     def __init__(self, attrs=None, kwargs=None, debug=True):
         self.debug = debug
         self.id_cnt = 0
@@ -44,11 +44,11 @@ class SplitJSONWidget(SplitJSONWidgetBase):
 
     def _embed_js(self, value):
         return value.replace('"', "'").replace("'", "\\'")
-    
+
     def _get_id_cnt(self):
         self.id_cnt += 1
         return self.id_cnt
-    
+
     def _get_name_prefix(self, name):
         return 'ul_{}'.format(name)
 
@@ -95,7 +95,7 @@ class SplitJSONWidget(SplitJSONWidgetBase):
         li = """<li id='{}'>{}{}</li>""".format(init_id, input_field, del_btn)
         cleaned_li = self._embed_js(li)
         add_li_js = self.li_row_tmpl.format(init_id,
-                                            name, name, 
+                                            name, name,
                                             cleaned_li,
                                             ul_id).replace('\n', '').replace(' '*2, ' ')
         add_btn = self.add_btn_tmpl.format(add_li_js, name.title().replace('_', ' '))
@@ -106,7 +106,7 @@ class SplitJSONWidget(SplitJSONWidgetBase):
         add_btn = self._get_add_btn(name)
         inputs = self._get_single_fields(name, value or {})
         result = self._prepare_as_ul(name, inputs)
-        
+
         if self.debug:
             # render json as well
             source_data = self.source_label.format(value)
@@ -205,12 +205,12 @@ class SchacPersonalUniqueIdWidget(SplitJSONWidget, forms.Widget):
         elif value is None:
             inputs.append(self._as_text_field(name, ''))
         return inputs
- 
+
     def render(self, name, value, attrs=None, renderer=None):
         add_btn = self._get_add_btn(name)
         inputs = self._get_single_fields(name, value or {})
         result = self._prepare_as_ul(name, inputs)
-        
+
         if self.debug:
             # render json as well
             source_data = self.source_label.format(value)
@@ -231,7 +231,7 @@ class SchacPersonalUniqueCodeWidget(SchacPersonalUniqueIdWidget):
         l_value = [settings.SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX,
                    settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE,
                    ]
-        
+
         value = value.replace(settings.SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX, '')[1:]
         sv = value.split(':')
         if len(sv) > 2:
@@ -275,7 +275,7 @@ class SchacHomeOrganizationTypeWidget(SchacPersonalUniqueIdWidget):
         l_value = [settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX,
                    settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE,
                    ]
-        
+
         if value:
             sv = value.replace(settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX, '').split(':')[1:]
             if len(sv) > 1:
@@ -284,7 +284,7 @@ class SchacHomeOrganizationTypeWidget(SchacPersonalUniqueIdWidget):
                 value = sv[1]
         else:
             value = ''
-        
+
         row_id = self._get_id_cnt()
         static_prefix = "<input style='width: 285px;' class='vTextField' value='{}' name='{}_1_[{}]' disabled>".format(l_value[0],
                                                                                                                        name,
@@ -353,11 +353,33 @@ class eduPersonScopedAffiliationWidget(SchacPersonalUniqueIdWidget):
                            </select>"""
         option_1_tmpl = """<option value="{}">{}</option>
                         """
-        
+
         select_1_options_list.extend([option_1_tmpl.format(i[0]+self.scoped_symbol, i[0]+self.scoped_symbol) for i in settings.AFFILIATION])
         select_1 = select_1_tmpl.format('{}_1_[{}]'.format(name, row_id), '', ''.join(select_1_options_list))
-        
+
         input_suffix = "<input style='width: 170px;' class='vTextField' value='{}' name='{}_2_[{}]'>".format(l_value[1],
                                                                                                              name,
                                                                                                              row_id)
         return select_1+input_suffix
+
+
+class TitleWidget(SchacPersonalUniqueIdWidget):
+    """
+    one of settings.LDAP_PEOPLES_TITLES
+    """
+
+    def _as_text_field(self, name, value):
+        attrs = self.build_attrs(self.attrs)
+        l_value = []
+        if not value:
+            value = ''
+        row_id = self._get_id_cnt()
+        select_1_tmpl = """<select name={} {}>
+                               {}
+                           </select>"""
+        option_1_tmpl = """<option value="{}">{}</option>
+                        """
+        select_1_options_list = ['<option value="{}" selected>{}</option>'.format(value, value)]
+        select_1_options_list.extend([option_1_tmpl.format(i[0], i[0]) for i in settings.LDAP_PEOPLES_TITLES])
+        select_1 = select_1_tmpl.format('{}_1_[{}]'.format(name, row_id), '', ''.join(select_1_options_list))
+        return select_1

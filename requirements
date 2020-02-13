@@ -1,3 +1,4 @@
+django>=2.2.9,<3.0
 bcrypt
 # nt hashing dep
 passlib
@@ -13,3 +14,5 @@ git+https://github.com/peppelinux/pySSHA-slapd.git
 git+https://github.com/silentsokolov/django-admin-rangefilter.git
 
 chardet
+
+django_admin_multiple_choice_list_filter

@@ -69,35 +69,35 @@ tutor, \
 assistente universitario, \
 collaboratore coordinato continuativo, \
 collaboratore linguistico, \
-cultore della materia'): ['staff', 'member'],
+cultore della materia [staff, member]'): ['staff', 'member'],
 
 _('associato (ad es. CNR), \
 consorziato (membro del consorzio a cui l\'ente appartiene), \
 dipendente altra università o ente di \
 ricerca o azienda sanitaria/ospedaliera/policlinico, \
 dottorando di altra università (consorziata), \
-laureato frequentatore/collaboratore di ricerca (a titolo gratuito), \
-'): ['member'],
+laureato frequentatore/collaboratore di ricerca (a titolo gratuito) \
+[member]'): ['member'],
 
 _('cessato'): [],
 
 _('convenzionato (cliente delle convenzioni), \
 fornitore (dipendente o titolare delle ditte fornitrici), \
-ispettore, ospite / visitatore'): ['affiliate'],
+ispettore, ospite / visitatore [affiliate]'): ['affiliate'],
 
 _('lettore di scambio, \
 titolare di borsa di studio, \
-volontario servizio civile nazionale'): ['member'],
+volontario servizio civile nazionale [member]'): ['member'],
 
 _('studente erasmus in ingresso [student]'): ['student'],
 
-_('dottorando, specializzando'): ['staff', 'member', 'student'],
+_('dottorando, specializzando [staff, member, student]'): ['staff', 'member', 'student'],
 
 _('studente, \
 studente fuori sede (tesista, tirocinante, ...), \
 studente laurea specialistica, \
 studente master, \
-studente siss'): ['student', 'member'],
+studente siss [member, student]'): ['student', 'member'],
 }
 
 

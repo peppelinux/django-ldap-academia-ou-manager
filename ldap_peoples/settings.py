@@ -2,9 +2,11 @@ import os
 
 from django.conf import settings
 
+
 LDAP_DATETIME_FORMAT = '%Y%m%d%H%M%SZ'
 LDAP_DATETIME_MILLISECONDS_FORMAT = '%Y%m%d%H%M%S.%fZ'
-DEFAULT_EDUPERSON_ENTITLEMENT = ['urn:mace:terena.org:tcs:personal-user',
+DEFAULT_EDUPERSON_ENTITLEMENT = ['urn:mace:dir:entitlement:common-lib-terms',
+                                 'urn:mace:terena.org:tcs:personal-user',
                                  'urn:mace:terena.org:tcs:escience-user']
 
 # If pwdAccountLockedTime is set to 000001010000Z, the user's account
@@ -69,8 +71,7 @@ EPPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z\-\.\_]+'
 SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX = 'urn:schac:personalUniqueCode'
 
 SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX = 'urn:schac:homeOrganizationType'
-SCHAC_HOMEORGANIZATIONTYPE_DEFAULT = ['educationInstitution',
-                                      'university']
+SCHAC_HOMEORGANIZATIONTYPE_DEFAULT = ['university']
 
 SCHAC_HOMEORGANIZATION_DEFAULT = settings.LDAP_BASE_DOMAIN
 
@@ -101,9 +102,13 @@ AFFILIATION = (
                 ('alum', 'alum'),
                 ('member', 'member'),
                 ('affiliate', 'affiliate'),
-                ('employee', 'employee'),
                 ('library-walk-in', 'library-walk-in'),
               )
+
+LDAP_PEOPLES_TITLES = (
+                        ('student', 'student'),
+                        ('employee', 'employee'),
+                      )
 
 # this option deactive previous auth sessions when a new LDAP auth occours
 MULTIPLE_USER_AUTH_SESSIONS = False

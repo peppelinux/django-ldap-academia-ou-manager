@@ -154,7 +154,7 @@ u.delete()
 
 #### Unit test
 ````
-./manage.py test ldap_peoples.test.LdapAcademiaUserTestCase
+./manage.py test ldap_peoples.tests.LdapAcademiaUserTestCase
 ````
 
 TODO
@@ -166,28 +166,3 @@ TODO
  - We use custom django-ldapdb fork because readonly fields like createTimestamps and other are fautly on save in the official django-ldapdb repo. [See related PR](https://github.com/django-ldapdb/django-ldapdb/pull/185);
  - ListFields doesn't handle properly **verbose_name**. It depends on the form class, we use our fork for elude this;
  - Aggregate lookup for evaluating min max on records, this come from django-ldapdb;
-
-**stupid thing**
-too many connection from django-ldapdb backends makes slapd logs pretty huge. This could be fixed in django-ldapdb as follow BUT we cannot do this otherwise it will not work in multi threaded environment like wsgi context.
-
-````
-# backeds.ldap.base#237
-    def ensure_connection(self):
-        super(DatabaseWrapper, self).ensure_connection()
-
-        # Do a test bind, which will revive the connection if interrupted, or reconnect
-        conn_params = self.get_connection_params()
-
-        # this creates too many connections to LDAP server!
-        # try:
-            # self.connection.simple_bind_s(
-                # conn_params['bind_dn'],
-                # conn_params['bind_pw'],
-            # )
-            # print('ensure_connection. try')
-        # except ldap.SERVER_DOWN:
-
-        if not self.connection:
-            self.connect()
-            # print('ensure_connection. except')
-````

@@ -11,9 +11,9 @@ from django.db import models
 from django.utils.translation import gettext as _
 from ldapdb.models.fields import (CharField,
                                   DateTimeField,
-                                  TimestampField,
                                   ImageField,
-                                  IntegerField)
+                                  IntegerField,
+                                  TimestampField)
 from pySSHA import ssha
 from .hash_functions import encode_secret
 from . ldap_utils import (parse_generalized_time,
@@ -30,7 +30,8 @@ from . model_fields import (TimeStampField,
                             ScopedListField,
                             eduPersonAffiliationListField,
                             eduPersonScopedAffiliationListField,
-                            SchacHomeOrganizationTypeListField)
+                            SchacHomeOrganizationTypeListField,
+                            TitleField)
 from . serializers import LdapSerializer
 
 
@@ -83,8 +84,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     Class for representing an LDAP user entry.
     """
     # LDAP meta-data
-    base_dn = "ou={},{}".format(settings.LDAP_OU,
-                                settings.LDAP_BASEDN)
+    base_dn = "{}".format(settings.LDAP_PEOPLE_DN)
 
     object_classes = ['inetOrgPerson',
                       'organizationalPerson',
@@ -110,19 +110,22 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                     help_text="uid",
                     primary_key=True)
     cn = CharField(db_column='cn',
-                   verbose_name=_("Name"),
-                   help_text='cn',
-                   blank=False)
+                     verbose_name=_("Common Name"),
+                     help_text='cn',
+                     blank=False)
     givenName = CharField(db_column='givenName',
                           help_text="givenName",
                           verbose_name=_("First Name"),
                           blank=True, null=True)
-    sn = CharField("Final name", db_column='sn',
+    sn = CharField("Last name", db_column='sn',
                    help_text='sn',
                    blank=False)
     displayName = CharField(db_column='displayName',
                             help_text='displayName',
                             blank=True, null=True)
+    title = TitleField(db_column='title',
+                       help_text='title',
+                       blank=True, null=True)
     telephoneNumber = ListField(db_column='telephoneNumber',
                                 blank=True)
     mail = EmailListField(db_column='mail',
@@ -343,10 +346,10 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         return self.userPassword
 
     def reset_schacExpiryDate(self):
-        self.schaExpiryDate = timezone.localtime()+\
-                              timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
+        self.schacExpiryDate = timezone.localtime()+\
+                               timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
         self.save()
-        return self.schaExpiryDate
+        return self.schacExpiryDate
 
     # def save(self, *args, **kwargs):
         # DEPRECATED

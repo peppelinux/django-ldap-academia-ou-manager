@@ -33,6 +33,7 @@ from . model_fields import (TimeStampField,
                             SchacHomeOrganizationTypeListField)
 from . serializers import LdapSerializer
 
+
 class LdapGroup(ldapdb.models.Model):
     """
     Class for representing an LDAP group entry.
@@ -109,9 +110,9 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                     help_text="uid",
                     primary_key=True)
     cn = CharField(db_column='cn',
-                     verbose_name=_("Name"),
-                     help_text='cn',
-                     blank=False)
+                   verbose_name=_("Name"),
+                   help_text='cn',
+                   blank=False)
     givenName = CharField(db_column='givenName',
                           help_text="givenName",
                           verbose_name=_("First Name"),

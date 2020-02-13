@@ -1,4 +1,7 @@
 import ldap
+import logging
+
+
 from django.conf import settings
 # from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
@@ -11,6 +14,9 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 from . models import LdapAcademiaUser
+
+
+logger = logging.getLogger(__name__)
 
 
 class LdapAcademiaAuthBackend(ModelBackend):
@@ -37,7 +43,7 @@ class LdapAcademiaAuthBackend(ModelBackend):
                                         password)
             ldap_conn.connection.unbind_s()
         except Exception as e:
-            print(e)
+            logger.error(e)
             return None
 
         # if account beign unlocked this will be always false
@@ -72,9 +78,20 @@ class LdapAcademiaAuthBackend(ModelBackend):
         # works only if this field is active in account model (need to be customized first!)
         if hasattr(user, 'access_notification'):
             if user.access_notification:
+                user_agent = ''
+                ipaddress = ''
+                if request:
+                    user_agent = request.META.get('HTTP_USER_AGENT', '')
+                    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', ' , ')
+                    if x_forwarded_for:
+                        ipaddress = x_forwarded_for.split(',')[-1].strip()
+                    else:
+                        ipaddress = request.META.get('REMOTE_ADDR')
                 d = {'time': timezone.localtime(),
                      'user': lu.uid,
-                     'hostname': settings.HOSTNAME}
+                     'hostname': settings.HOSTNAME,
+                     'user_agent': user_agent,
+                     'ipaddress': ipaddress}
                 send_mail(_('Access notification'),
                               settings.IDENTITY_MSG_ACCESS.format(**d),
                               settings.DEFAULT_FROM_EMAIL,

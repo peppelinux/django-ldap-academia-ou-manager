@@ -1,5 +1,6 @@
 import ldap
 import ldapdb.models
+import logging
 import os
 
 from django.conf import settings
@@ -35,6 +36,9 @@ from . model_fields import (TimeStampField,
 from . serializers import LdapSerializer
 
 
+logger = logging.getLogger(__name__)
+
+
 class LdapGroup(ldapdb.models.Model):
     """
     Class for representing an LDAP group entry.
@@ -43,14 +47,7 @@ class LdapGroup(ldapdb.models.Model):
     """
     # LDAP meta-data
     base_dn = "ou=groups,{}".format(settings.LDAP_BASEDN)
-    object_classes = [
-                      # 'posixGroup',
-                      'groupOfNames']
-
-    # posixGroup attributes for future forks
-    # gid = IntegerField(db_column='gidNumber', unique=True)
-    # name = CharField(db_column='cn', max_length=200, primary_key=True)
-    # usernames = MultiValueField(db_column='memberUid')
+    object_classes = ['groupOfNames',]
 
     cn = CharField(db_column='cn',
                    primary_key=True)
@@ -230,16 +227,19 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     def lock(self):
         self.pwdAccountLockedTime = settings.PPOLICY_PERMANENT_LOCKED_TIME
         self.save()
+        logger.debug('Locked {} with {}'.format(self.uid, self.pwdAccountLockedTime))
         return self.pwdAccountLockedTime
 
     def disable(self):
         self.pwdAccountLockedTime = format_generalized_time(timezone.localtime())
         self.save()
+        logger.debug('Disabled {} with {}'.format(self.uid, self.pwdAccountLockedTime))
         return self.pwdAccountLockedTime
 
     def enable(self):
         self.pwdAccountLockedTime = None
         self.save()
+        logger.debug('Enabled {} with {}'.format(self.uid, 'pwdAccountLockedTime = None'))
 
     def locked_time(self):
         if self.pwdAccountLockedTime == settings.PPOLICY_PERMANENT_LOCKED_TIME:
@@ -325,6 +325,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                                       newpw = password.encode(settings.FILE_CHARSET))
         ldap_conn.connection.unbind_s()
         self.refresh_from_db()
+        logger.info('{} changed password'.format(self.uid))
         return True
 
     def set_password_custom(self, password, hashtype=settings.DEFAULT_SECRET_TYPE):
@@ -343,12 +344,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
             enc_value = encode_secret(enc_map[field], password)
             setattr(self, field, enc_value)
         self.save()
+        logger.info('{} changed password'.format(self.uid))
         return self.userPassword
 
     def reset_schacExpiryDate(self):
         self.schacExpiryDate = timezone.localtime()+\
                                timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
         self.save()
+        logger.info('{} reset schacExpiryDate'.format(self.uid))
         return self.schacExpiryDate
 
     # def save(self, *args, **kwargs):

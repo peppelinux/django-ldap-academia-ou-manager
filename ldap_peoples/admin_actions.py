@@ -1,14 +1,17 @@
 import json
+import logging
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
 from django.contrib.contenttypes.models import ContentType
-# from django.core import serializers
 from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from .models import *
+
+
+logger = logging.getLogger(__name__)
 
 
 def export_as_json(modeladmin, request, queryset):
@@ -46,6 +49,7 @@ def send_reset_token_email(modeladmin, request, queryset):
         msg = _('{}, email sent').format(i.__str__())
         ch_msg = _('Password reset token sent {}').format(i.__str__())
         messages.add_message(request, messages.INFO, msg)
+        logger.info(msg)
         LogEntry.objects.log_action(
             user_id         = request.user.pk,
             content_type_id = ContentType.objects.get_for_model(i).pk,
@@ -63,7 +67,9 @@ def lock_account(modeladmin, request, queryset):
     for i in queryset:
         num_sync += 1
         i.lock()
-        messages.add_message(request, messages.WARNING, _('{}, disabled').format(i.__str__()))
+        msg = _('{}, disabled').format(i.__str__())
+        logger.info(msg)
+        messages.add_message(request, messages.WARNING, )
         LogEntry.objects.log_action(
             user_id         = request.user.pk,
             content_type_id = ContentType.objects.get_for_model(i).pk,
@@ -82,7 +88,9 @@ def disable_account(modeladmin, request, queryset):
     for i in queryset:
         num_sync += 1
         i.disable()
-        messages.add_message(request, messages.WARNING, _('{}, disabled').format(i.__str__()))
+        msg = _('{}, disabled').format(i.__str__())
+        logger.info(msg)
+        messages.add_message(request, messages.WARNING, msg)
         LogEntry.objects.log_action(
             user_id         = request.user.pk,
             content_type_id = ContentType.objects.get_for_model(i).pk,
@@ -102,7 +110,9 @@ def enable_account(modeladmin, request, queryset):
     for i in queryset:
         num_sync += 1
         i.enable()
-        messages.add_message(request, messages.INFO, _('{}, enabled').format(i.__str__()))
+        msg = _('{}, enabled').format(i.__str__())
+        logger.info(msg)
+        messages.add_message(request, messages.INFO, msg)
         LogEntry.objects.log_action(
             user_id         = request.user.pk,
             content_type_id = ContentType.objects.get_for_model(i).pk,

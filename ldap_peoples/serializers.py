@@ -160,7 +160,7 @@ class LdapSerializer(object):
         return LdapImportExport.export_entry_to_ldif(self.dn, d)
 
     def json(self):
-        return export_entry_to_json(self.serialize())
+        return LdapImportExport.export_entry_to_json(self.serialize())
 
     def json_ext(self):
         """

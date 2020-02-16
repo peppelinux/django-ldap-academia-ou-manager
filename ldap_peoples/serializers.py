@@ -3,6 +3,7 @@ import copy
 import io
 import json
 import ldap_peoples.ldif as ldif
+import logging
 
 from django.apps import apps
 from django.conf import settings
@@ -13,6 +14,9 @@ from ldap import modlist
 
 from . ldap_utils import (format_generalized_time,
                           parse_generalized_time)
+
+
+logger = logging.getLogger(__name__)
 
 
 class LdapImportExport(object):
@@ -75,6 +79,7 @@ class LdapImportExport(object):
         for dn, entry in ldif_rec.all_records:
             add_modlist = modlist.addModlist(entry)
             ldap_conn.add_s(dn, add_modlist)
+            logger.debug('Imported {} with LDIF'.format(dn))
         return True
 
     @staticmethod
@@ -110,6 +115,7 @@ class LdapImportExport(object):
                 lu.save()
             else:
                 lu = app_model.objects.create(**entry)
+            logger.debug('Imported {} with JSON'.format(entry.get(lu.dn)))
         return True
 
 
@@ -160,7 +166,7 @@ class LdapSerializer(object):
         return LdapImportExport.export_entry_to_ldif(self.dn, d)
 
     def json(self):
-        return export_entry_to_json(self.serialize())
+        return LdapImportExport.export_entry_to_json(self.serialize())
 
     def json_ext(self):
         """

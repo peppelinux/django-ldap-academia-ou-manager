@@ -132,6 +132,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                        'pwdHistory_repr',
                        'userPassword',
                        'sambaNTPassword',
+                       'eduPersonPrincipalName',
                        )
     actions = [send_reset_token_email,
                enable_account,
@@ -236,10 +237,18 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         """
         method that trigger password encoding
         """
-        obj.save()
+        if not form.data.get('eduPersonPrincipalName'):
+            obj.set_default_eppn(force=True)
+        else:
+            obj.save()
+
+        obj.update_eduPersonScopedAffiliation()
+
         if form.data.get('new_passwd'):
             passw = form.data.get('new_passwd')
             obj.set_password(passw)
+
+
 
 
 @admin.register(LdapGroup)

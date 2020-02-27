@@ -289,11 +289,19 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         self.save()
 
     def set_default_eppn(self, force=False):
-        if self.eduPersonPrincipalName and not force:
-            return self.eduPersonPrincipalName
         self.eduPersonPrincipalName = '@'.join((self.uid, settings.LDAP_BASE_DOMAIN))
-        self.save()
+        if force:
+            self.save()
         return self.eduPersonPrincipalName
+
+    def update_eduPersonScopedAffiliation(self):
+        updated = [ele for ele in self.eduPersonScopedAffiliation
+                   if '@'+settings.LDAP_BASE_DOMAIN not in ele]
+        updated.extend(['@'.join((ele, settings.LDAP_BASE_DOMAIN)) for ele in self.eduPersonAffiliation])
+        if self.eduPersonScopedAffiliation != updated:
+            self.eduPersonScopedAffiliation = updated
+            self.save()
+        return self.eduPersonScopedAffiliation
 
     def membership(self):
         if self.memberOf: return self.memberOf
@@ -354,22 +362,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         logger.info('{} reset schacExpiryDate'.format(self.uid))
         return self.schacExpiryDate
 
-    # def save(self, *args, **kwargs):
-        # DEPRECATED
-        # for field in settings.READONLY_FIELDS:
-            # if hasattr(self, field):
-                # try:
-                    # del self.__dict__[field]
-                # except:
-                    # print('error on deletion {} readonly field'.format(field))
-
-        # check types schacDateOfBirth and schacExpiryDate before saving
-        # if entry.get('schacDateOfBirth'):
-            # entry['schacDateOfBirth'] = timezone.datetime.strptime(entry['schacDateOfBirth'],
-                                                                   # settings.SCHAC_DATEOFBIRTH_FORMAT)
-        # if entry.get('schacExpiryDate'):
-            # entry['schacExpiryDate'] = parse_generalized_time(entry['schacExpiryDate'])
-        # super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        """
+        Just check and update eppn
+        """
+        if not self.eduPersonPrincipalName or \
+           self.uid not in self.eduPersonPrincipalName:
+            self.set_default_eppn()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.dn

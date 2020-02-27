@@ -1,0 +1,10 @@
+CHANGELOG
+---------
+
+v0.8.8
+------
+
+- eduPersonPrincipalName is automatically saved on each update
+- eduPersonPrincipalName is now a readonly field in admin
+- eduPersonScopedAffiliation is automatically updated followin eduPersonAffiliation
+- Added 'EU' and 'INT' in the country codes

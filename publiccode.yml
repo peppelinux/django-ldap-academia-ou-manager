@@ -1,4 +1,4 @@
-# This repository adheres to the publiccode.yml standard by including this 
+# This repository adheres to the publiccode.yml standard by including this
 # metadata file that makes public software easily discoverable.
 # More info at https://github.com/italia/publiccode.yml
 
@@ -85,6 +85,8 @@ description:
     features:
       - LDAP manager
     screenshots:
+      - >-
+        https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager/blob/master/img/django-academia-ou-manager.png
       - >-
         https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager/blob/master/img/preview.png
       - >-

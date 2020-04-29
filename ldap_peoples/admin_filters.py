@@ -25,8 +25,9 @@ class AffiliationListFilter(MultipleChoiceListFilter):
     parameter_name = 'eduPersonAffiliation'
 
     def lookups(self, request, model_admin):
-        return [(k, v) for k,v in sorted(settings.AFFILIATION)]
-
+        l = [(k, v) for k,v in sorted(settings.AFFILIATION)]
+        l.append(('no-affiliation', ''))
+        return l
     def queryset(self, request, queryset):
         pk_list = []
         if request.GET.get(self.parameter_name):

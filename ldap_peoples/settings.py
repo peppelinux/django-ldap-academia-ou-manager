@@ -108,7 +108,7 @@ AFFILIATION = (
 
 LDAP_PEOPLES_TITLES = (
                         ('student', 'student'),
-                        #('employee', 'employee'),
+                        ('employee', 'employee'),
                         ('staff', 'staff'),
                         ('member', 'member'),
                       )

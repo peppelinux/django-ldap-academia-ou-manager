@@ -71,7 +71,8 @@ EPPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z\-\.\_]+'
 SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX = 'urn:schac:personalUniqueCode'
 
 SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX = 'urn:schac:homeOrganizationType'
-SCHAC_HOMEORGANIZATIONTYPE_DEFAULT = ['university']
+SCHAC_HOMEORGANIZATIONTYPE_DEFAULT = [SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX+':int:university',
+                                      SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX+':eu:higherEducationInstitution']
 
 SCHAC_HOMEORGANIZATION_DEFAULT = settings.LDAP_BASE_DOMAIN
 
@@ -108,6 +109,8 @@ AFFILIATION = (
 LDAP_PEOPLES_TITLES = (
                         ('student', 'student'),
                         ('employee', 'employee'),
+                        ('staff', 'staff'),
+                        ('member', 'member'),
                       )
 
 # this option deactive previous auth sessions when a new LDAP auth occours

@@ -69,7 +69,7 @@ class LdapAcademiaAuthBackend(ModelBackend):
         if not settings.MULTIPLE_USER_AUTH_SESSIONS:
             for session in Session.objects.all():
                 try:
-                    if int(session.get_decoded()['_auth_user_id']) == user.pk:
+                    if int(session.get_decoded().get('_auth_user_id')) == user.pk:
                         session.delete()
                 except (KeyError, TypeError, ValueError):
                     pass

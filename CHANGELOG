@@ -1,0 +1,18 @@
+CHANGELOG
+---------
+
+v0.8.9
+------
+
+- fixed titles values as widget
+- no affiliation filter (to get deprovisioned guys)
+- sambaSID added in model and admin
+
+
+v0.8.8
+------
+
+- eduPersonPrincipalName is automatically saved on each update
+- eduPersonPrincipalName is now a readonly field in admin
+- eduPersonScopedAffiliation is automatically updated followin eduPersonAffiliation
+- Added 'EU' and 'INT' in the country codes

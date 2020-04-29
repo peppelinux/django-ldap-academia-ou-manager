@@ -26,7 +26,7 @@ class AffiliationListFilter(MultipleChoiceListFilter):
 
     def lookups(self, request, model_admin):
         l = [(k, v) for k,v in sorted(settings.AFFILIATION)]
-        l.append(('', 'no-affiliation'))
+        l.append((None, 'no-affiliation'))
         return l
     def queryset(self, request, queryset):
         pk_list = []

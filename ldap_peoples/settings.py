@@ -111,7 +111,7 @@ LDAP_PEOPLES_TITLES = (
                         #('employee', 'employee'),
                         ('staff', 'staff'),
                         ('member', 'member'),
-                        ('', 'no-affiliation'),
+                        ('no-affiliation', ''),
                       )
 
 # this option deactive previous auth sessions when a new LDAP auth occours

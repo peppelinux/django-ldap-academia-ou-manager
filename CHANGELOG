@@ -1,6 +1,14 @@
 CHANGELOG
 ---------
 
+v0.8.9
+------
+
+- fixed titles values as widget
+- no affiliation filter (to get deprovisioned guys)
+- sambaSID added in model and admin
+
+
 v0.8.8
 ------
 

@@ -134,7 +134,10 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                              # editable=False)
     sambaNTPassword = CharField(db_column='sambaNTPassword',
                                 help_text=_("SAMBA NT Password (freeRadius PEAP)"),
-                                blank=True, null=True,) # editable=False)
+                                blank=True, null=True,)
+    sambaSID = CharField(db_column='sambaSID',
+                                help_text=_("Microsoft Network unique identificator"),
+                                blank=True, null=True)
     # academia
     eduPersonPrincipalName = CharField(db_column='eduPersonPrincipalName',
                                        help_text=_("A scoped identifier for a person"),

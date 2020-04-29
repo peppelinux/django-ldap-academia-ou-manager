@@ -144,7 +144,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
     # action_form = FileImportActionForm
 
     # TODO: aggregate lookup for evaluating min max on records
-    #date_hierarchy = 'created'
+    # date_hierarchy = 'created'
 
     fieldsets = (
         (None, { 'fields' : (('uid',
@@ -156,23 +156,19 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                             ('title'),
                             ),
                 }),
+        ('Samba and Azure related', {
+            'classes': ('collapse',),
+            'fields': (
+                        ('sambaSID', 'sambaNTPassword'),
+                        ),
+                      }
+        ),
         ('Password', {
             'classes': ('collapse',),
             'fields': (
                         # ('password_encoding', 'new_passwd'),
-                        ('userPassword', 'sambaNTPassword'),
+                        ('userPassword',),
                         ('new_passwd',),
-                        ),
-                      }
-        ),
-        ('Additional info', {
-            'classes': ('collapse',),
-            'fields': (
-                        ('createTimestamp', 'creatorsName',),
-                        ('modifyTimestamp', 'modifiersName',),
-                        ('get_membership_as_ul',
-                        ## 'membership',
-                        ),
                         ),
                       }
         ),
@@ -184,6 +180,17 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                         ('failure_times',),
                         ('pwdChangedTime',),
                         'pwdHistory_repr',
+                        ),
+                      }
+        ),
+        ('Additional info', {
+            'classes': ('collapse',),
+            'fields': (
+                        ('createTimestamp', 'creatorsName',),
+                        ('modifyTimestamp', 'modifiersName',),
+                        ('get_membership_as_ul',
+                        ## 'membership',
+                        ),
                         ),
                       }
         ),

@@ -163,6 +163,12 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                                verbose_name='EduPerson Orcid',
                                help_text=_("ORCID user identifier released and managed by orcid.org"),
                                blank=True, null=True)
+    eduPersonAssurance = CharField(db_column='eduPersonAssurance',
+                                   verbose_name='EduPerson Assurance',
+                                   choices = settings.EDUPERSON_ASSURANCES,
+                                   default = settings.EDUPERSON_DEFAULT_ASSURANCE,
+                                   help_text=_("Identity proofing and credential issuance (LoA)"),
+                                   blank=True, null=True)
     schacHomeOrganization = CharField(db_column='schacHomeOrganization',
                                       help_text=_(("The persons home organization "
                                                    "using the domain of the organization.")),

@@ -198,6 +198,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
             ##'classes': ('collapse',),
             'fields': (
                         ('eduPersonPrincipalName', 'eduPersonOrcid',),
+                        ('eduPersonAssurance',),
                         ('eduPersonAffiliation',
                         'eduPersonScopedAffiliation',),
                         'eduPersonEntitlement',

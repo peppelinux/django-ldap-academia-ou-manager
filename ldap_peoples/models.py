@@ -157,7 +157,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     eduPersonEntitlement = ListField(db_column='eduPersonEntitlement',
                                      help_text=("eduPersonEntitlement"),
                                      verbose_name='eduPersonEntitlement',
-                                     default=settings.DEFAULT_EDUPERSON_ENTITLEMENT,
+                                     #default=settings.DEFAULT_EDUPERSON_ENTITLEMENT,
                                      blank=True, null=True)
     eduPersonOrcid = CharField(db_column='eduPersonOrcid',
                                verbose_name='EduPerson Orcid',

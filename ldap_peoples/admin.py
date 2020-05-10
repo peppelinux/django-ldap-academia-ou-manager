@@ -208,11 +208,11 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         ('Academia Schac)', {
             ##'classes': ('collapse',),
             'fields': (
-                        ('schacPlaceOfBirth', 'schacDateOfBirth'),
+                        ('schacPlaceOfBirth', 'schacDateOfBirth', 'schacGender'),
                         ('schacPersonalUniqueID', 'schacPersonalUniqueCode'),
                         ('schacExpiryDate'),
-                       ('schacHomeOrganization',
-                        'schacHomeOrganizationType'),
+                        ('schacHomeOrganization',
+                         'schacHomeOrganizationType'),
                         ),
                       }
         )

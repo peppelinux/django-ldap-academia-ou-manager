@@ -113,9 +113,9 @@ AFFILIATION = (
 
 LDAP_PEOPLES_TITLES = (
                         ('student', 'student'),
-                        ('employee', 'employee'),
-                        ('staff', 'staff'),
-                        ('member', 'member'),
+                        ('phd', 'phd'),
+                        ('prof.', 'prof.'),
+                        ('dott.', 'dott.'),
                       )
 
 # this option deactive previous auth sessions when a new LDAP auth occours

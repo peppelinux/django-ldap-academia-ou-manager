@@ -198,6 +198,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
             ##'classes': ('collapse',),
             'fields': (
                         ('eduPersonPrincipalName', 'eduPersonOrcid',),
+                        ('eduPersonAssurance',),
                         ('eduPersonAffiliation',
                         'eduPersonScopedAffiliation',),
                         'eduPersonEntitlement',
@@ -207,11 +208,11 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         ('Academia Schac)', {
             ##'classes': ('collapse',),
             'fields': (
-                        ('schacPlaceOfBirth', 'schacDateOfBirth'),
+                        ('schacPlaceOfBirth', 'schacDateOfBirth', 'schacGender'),
                         ('schacPersonalUniqueID', 'schacPersonalUniqueCode'),
                         ('schacExpiryDate'),
-                       ('schacHomeOrganization',
-                        'schacHomeOrganizationType'),
+                        ('schacHomeOrganization',
+                         'schacHomeOrganizationType'),
                         ),
                       }
         )

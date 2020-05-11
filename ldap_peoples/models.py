@@ -157,12 +157,19 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     eduPersonEntitlement = ListField(db_column='eduPersonEntitlement',
                                      help_text=("eduPersonEntitlement"),
                                      verbose_name='eduPersonEntitlement',
-                                     default=settings.DEFAULT_EDUPERSON_ENTITLEMENT,
+                                     #default=settings.DEFAULT_EDUPERSON_ENTITLEMENT,
                                      blank=True, null=True)
     eduPersonOrcid = CharField(db_column='eduPersonOrcid',
                                verbose_name='EduPerson Orcid',
                                help_text=_("ORCID user identifier released and managed by orcid.org"),
                                blank=True, null=True)
+    eduPersonAssurance = CharField(db_column='eduPersonAssurance',
+                                   verbose_name='EduPerson Assurance',
+                                   choices = settings.EDUPERSON_ASSURANCES,
+                                   default = settings.EDUPERSON_DEFAULT_ASSURANCE,
+                                   help_text=_("Identity proofing and credential issuance (LoA)"),
+                                   blank=True, null=True)
+    # SCHAC 2015
     schacHomeOrganization = CharField(db_column='schacHomeOrganization',
                                       help_text=_(("The persons home organization "
                                                    "using the domain of the organization.")),
@@ -182,6 +189,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                                   help_text=_(('Specifies a "unique code" '
                                                'for the subject it is associated with')),
                                   blank=True, null=True)
+    schacGender = IntegerField(db_column='schacGender',
+                            choices=((0, _('Not know')),
+                                     (1, _('Male')),
+                                     (2, _('Female')),
+                                     (9, _('Not specified'))),
+                            help_text=_("OID: 1.3.6.1.4.1.25178.1.2.2"),
+                            verbose_name='schacGender',
+                            blank=True, null=True)
     schacDateOfBirth = DateField(db_column='schacDateOfBirth',
                                  format="%Y%m%d", # from_ldap format
                                  help_text=_("OID 1.3.6.1.4.1.1466.115.121.1.36"),

@@ -189,11 +189,11 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                                   help_text=_(('Specifies a "unique code" '
                                                'for the subject it is associated with')),
                                   blank=True, null=True)
-    schacGender = IntegerField(db_column='schacGender',
-                            choices=((0, _('Not know')),
-                                     (1, _('Male')),
-                                     (2, _('Female')),
-                                     (9, _('Not specified'))),
+    schacGender = CharField(db_column='schacGender', default=0,
+                               choices=((0, _('Not know')),
+                                        (1, _('Male')),
+                                        (2, _('Female')),
+                                        (9, _('Not specified'))),
                             help_text=_("OID: 1.3.6.1.4.1.25178.1.2.2"),
                             verbose_name='schacGender',
                             blank=True, null=True)

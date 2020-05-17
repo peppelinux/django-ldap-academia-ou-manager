@@ -366,11 +366,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         logger.info('{} changed password'.format(self.uid))
         return self.userPassword
 
-    def reset_schacExpiryDate(self):
-        self.schacExpiryDate = timezone.localtime()+\
-                               timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
+    def set_default_schacExpiryDate(self):
+        # set a default ExpiryDate if not available
+        if self.pwdChangedTime:
+            self.schacExpiryDate = self.pwdChangedTime + timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
+        else:
+            self.schacExpiryDate = timezone.localtime() + timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
         self.save()
-        logger.info('{} reset schacExpiryDate'.format(self.uid))
+        logger.debug('{} set default schacExpiryDate'.format(self.uid))
         return self.schacExpiryDate
 
     def save(self, *args, **kwargs):

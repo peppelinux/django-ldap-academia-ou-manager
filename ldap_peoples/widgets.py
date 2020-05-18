@@ -117,7 +117,7 @@ class SplitJSONWidget(SplitJSONWidgetBase):
 
 class SchacPersonalUniqueIdWidget(SplitJSONWidget, forms.Widget):
     """
-    urn:schac:personalUniqueID:IT:CF:
+    urn:schac:personalUniqueID:it:cf:
     """
     li_row_tmpl = """
                   if (window.js_cnt == undefined) {{

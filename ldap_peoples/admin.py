@@ -245,18 +245,16 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         """
         method that trigger password encoding
         """
-        if not form.data.get('eduPersonPrincipalName'):
-            obj.set_default_eppn(force=True)
-        else:
-            obj.save()
-
+        obj.set_default_schacHomeOrganization()
+        obj.set_default_schacHomeOrganizationType()
         obj.update_eduPersonScopedAffiliation()
+        if not form.data.get('eduPersonPrincipalName'):
+            obj.set_default_eppn()
+        obj.save()
 
         if form.data.get('new_passwd'):
             passw = form.data.get('new_passwd')
             obj.set_password(passw)
-
-
 
 
 @admin.register(LdapGroup)

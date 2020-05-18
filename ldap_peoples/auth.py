@@ -48,7 +48,6 @@ class LdapAcademiaAuthBackend(ModelBackend):
         if not lu.is_active():
             return None
 
-        # scoped_username = '@'.join((lu.uid, settings.LDAP_BASE_DOMAIN))
         try:
             # user = get_user_model().objects.get(username=scoped_username)
             user = get_user_model().objects.get(username=lu.uid)

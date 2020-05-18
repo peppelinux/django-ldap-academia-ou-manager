@@ -173,7 +173,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     schacHomeOrganization = CharField(db_column='schacHomeOrganization',
                                       help_text=_(("The persons home organization "
                                                    "using the domain of the organization.")),
-                                      default=settings.SCHAC_HOMEORGANIZATION_DEFAULT,
+                                      #  default=settings.SCHAC_HOMEORGANIZATION_DEFAULT,
                                       verbose_name='schacHomeOrganization',
                                       blank=True, null=True)
     schacHomeOrganizationType = SchacHomeOrganizationTypeListField(db_column='schacHomeOrganizationType',
@@ -189,11 +189,11 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                                   help_text=_(('Specifies a "unique code" '
                                                'for the subject it is associated with')),
                                   blank=True, null=True)
-    schacGender = CharField(db_column='schacGender', default=0,
-                               choices=((0, _('Not know')),
-                                        (1, _('Male')),
-                                        (2, _('Female')),
-                                        (9, _('Not specified'))),
+    schacGender = CharField(db_column='schacGender', default='0',
+                               choices=(('0', _('Not know')),
+                                        ('1', _('Male')),
+                                        ('2', _('Female')),
+                                        ('9', _('Not specified'))),
                             help_text=_("OID: 1.3.6.1.4.1.25178.1.2.2"),
                             verbose_name='schacGender',
                             blank=True, null=True)
@@ -272,13 +272,7 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         parsed =  os.linesep.join(failures)
         return parsed
 
-    def get_schacPersonalUniqueID_prefix(self):
-        if settings.SCHAC_PERSONALUNIQUEID_DEFAULT_PREFIX not in self.schacPersonalUniqueID:
-            self.schacPersonalUniqueID = '{}{}'.format(settings.SCHAC_PERSONALUNIQUEID_DEFAULT_PREFIX,
-                                                       self.schacPersonalUniqueID)
-        return self.schacPersonalUniqueID
-
-    def set_schacPersonalUniqueID(self, value,
+    def set_schacPersonalUniqueID(self, value, save=False,
                                   doc_type=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_DOCUMENT_CODE,
                                   country_code=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE):
 
@@ -291,27 +285,47 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                 self.schacPersonalUniqueID.append(unique_id)
         else:
             self.schacPersonalUniqueID = [unique_id]
-        self.save()
+        if save:
+            self.save()
 
-    def set_schacHomeOrganizationType(self, value,
+    def set_default_schacHomeOrganization(self, save=False):
+        if not self.schacHomeOrganization:
+            self.schacHomeOrganization = settings.SCHAC_HOMEORGANIZATION_DEFAULT
+        if save:
+            self.save()
+
+    def set_default_schacHomeOrganizationType(self, save=False,
                                       country_code=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE):
+        if not self.schacHomeOrganization:
+            logger.warn('Cannot set schacHomeOrganizationType without schacHomeOrganization')
+            return
         if not self.schacHomeOrganizationType:
             self.schacHomeOrganizationType = settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT
-        self.save()
+        if save:
+            self.save()
 
-    def set_default_eppn(self, force=False):
-        self.eduPersonPrincipalName = '@'.join((self.uid, settings.LDAP_BASE_DOMAIN))
-        if force:
+    def set_default_eppn(self, save=False):
+        if not self.schacHomeOrganization:
+            logger.warn('Cannot set eduPersonPrincipalName without schacHomeOrganization')
+            return
+        self.eduPersonPrincipalName = '@'.join((self.uid, self.schacHomeOrganization))
+        if save:
             self.save()
         return self.eduPersonPrincipalName
 
-    def update_eduPersonScopedAffiliation(self):
-        updated = [ele for ele in self.eduPersonScopedAffiliation
-                   if '@'+settings.LDAP_BASE_DOMAIN not in ele]
-        updated.extend(['@'.join((ele, settings.LDAP_BASE_DOMAIN)) for ele in self.eduPersonAffiliation])
+    def update_eduPersonScopedAffiliation(self, save=False):
+        if not self.schacHomeOrganization:
+            logger.warn('Cannot set ScopedAffiliations without schacHomeOrganization')
+            return
+
+        updated = [ele for ele in self.eduPersonScopedAffiliation]
+        updated.extend(['@'.join((ele, self.schacHomeOrganization))
+                        for ele in self.eduPersonAffiliation])
+        updated = list(set(updated))
         if self.eduPersonScopedAffiliation != updated:
             self.eduPersonScopedAffiliation = updated
-            self.save()
+            if save:
+                self.save()
         return self.eduPersonScopedAffiliation
 
     def membership(self):
@@ -366,24 +380,25 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         logger.info('{} changed password'.format(self.uid))
         return self.userPassword
 
-    def set_default_schacExpiryDate(self):
+    def set_default_schacExpiryDate(self, save=False):
         # set a default ExpiryDate if not available
         if self.pwdChangedTime:
             self.schacExpiryDate = self.pwdChangedTime + timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
         else:
             self.schacExpiryDate = timezone.localtime() + timezone.timedelta(days=settings.SHAC_EXPIRY_DURATION_DAYS)
-        self.save()
+        if save:
+            self.save()
         logger.debug('{} set default schacExpiryDate'.format(self.uid))
         return self.schacExpiryDate
 
-    def save(self, *args, **kwargs):
-        """
-        Just check and update eppn
-        """
-        if not self.eduPersonPrincipalName or \
-           self.uid not in self.eduPersonPrincipalName:
-            self.set_default_eppn()
-        super().save(*args, **kwargs)
+    #  def save(self, *args, **kwargs):
+        #  """
+        #  Just check and update eppn
+        #  """
+        #  if not self.eduPersonPrincipalName or \
+           #  self.uid not in self.eduPersonPrincipalName:
+            #  self.set_default_eppn()
+        #  super().save(*args, **kwargs)
 
     def __str__(self):
         return self.dn

@@ -4,7 +4,8 @@
 
 publiccodeYmlVersion: '0.2'
 name: django-ldap-academia-ou-manager
-releaseDate: '2019-02-18'
+releaseDate: '2019-02-19'
+softwareVersion: v0.8.2
 url: 'https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager'
 developmentStatus: stable
 landingURL: 'https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager'

@@ -67,11 +67,17 @@ SECRET_FIELD_VALIDATORS = {'regexp_lowercase': '[a-z]+',
 
 EPPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z\-\.\_]+'
 
+EDUPERSON_ASSURANCES = (('https://refeds.org/assurance/IAP/low', 'low'),
+                        ('https://refeds.org/assurance/IAP/medium', 'medium'),
+                        ('https://refeds.org/assurance/IAP/high', 'high'),)
+EDUPERSON_DEFAULT_ASSURANCE = 'https://refeds.org/assurance/IAP/medium'
+
 # https://www.internet2.edu/products-services/trust-identity/mace-registries/urnmace-namespace/
 SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX = 'urn:schac:personalUniqueCode'
 
 SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX = 'urn:schac:homeOrganizationType'
-SCHAC_HOMEORGANIZATIONTYPE_DEFAULT = ['university']
+SCHAC_HOMEORGANIZATIONTYPE_DEFAULT = [SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX+':int:university',
+                                      SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX+':eu:higherEducationInstitution']
 
 SCHAC_HOMEORGANIZATION_DEFAULT = settings.LDAP_BASE_DOMAIN
 
@@ -107,7 +113,9 @@ AFFILIATION = (
 
 LDAP_PEOPLES_TITLES = (
                         ('student', 'student'),
-                        ('employee', 'employee'),
+                        ('phd', 'phd'),
+                        ('prof.', 'prof.'),
+                        ('dott.', 'dott.'),
                       )
 
 # this option deactive previous auth sessions when a new LDAP auth occours

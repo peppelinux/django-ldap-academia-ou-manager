@@ -134,7 +134,10 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                              # editable=False)
     sambaNTPassword = CharField(db_column='sambaNTPassword',
                                 help_text=_("SAMBA NT Password (freeRadius PEAP)"),
-                                blank=True, null=True,) # editable=False)
+                                blank=True, null=True,)
+    sambaSID = CharField(db_column='sambaSID',
+                                help_text=_("Microsoft Network unique identificator"),
+                                blank=True, null=True)
     # academia
     eduPersonPrincipalName = CharField(db_column='eduPersonPrincipalName',
                                        help_text=_("A scoped identifier for a person"),
@@ -154,12 +157,19 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     eduPersonEntitlement = ListField(db_column='eduPersonEntitlement',
                                      help_text=("eduPersonEntitlement"),
                                      verbose_name='eduPersonEntitlement',
-                                     default=settings.DEFAULT_EDUPERSON_ENTITLEMENT,
+                                     #default=settings.DEFAULT_EDUPERSON_ENTITLEMENT,
                                      blank=True, null=True)
     eduPersonOrcid = CharField(db_column='eduPersonOrcid',
                                verbose_name='EduPerson Orcid',
                                help_text=_("ORCID user identifier released and managed by orcid.org"),
                                blank=True, null=True)
+    eduPersonAssurance = CharField(db_column='eduPersonAssurance',
+                                   verbose_name='EduPerson Assurance',
+                                   choices = settings.EDUPERSON_ASSURANCES,
+                                   default = settings.EDUPERSON_DEFAULT_ASSURANCE,
+                                   help_text=_("Identity proofing and credential issuance (LoA)"),
+                                   blank=True, null=True)
+    # SCHAC 2015
     schacHomeOrganization = CharField(db_column='schacHomeOrganization',
                                       help_text=_(("The persons home organization "
                                                    "using the domain of the organization.")),
@@ -179,6 +189,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
                                   help_text=_(('Specifies a "unique code" '
                                                'for the subject it is associated with')),
                                   blank=True, null=True)
+    schacGender = IntegerField(db_column='schacGender',
+                            choices=((0, _('Not know')),
+                                     (1, _('Male')),
+                                     (2, _('Female')),
+                                     (9, _('Not specified'))),
+                            help_text=_("OID: 1.3.6.1.4.1.25178.1.2.2"),
+                            verbose_name='schacGender',
+                            blank=True, null=True)
     schacDateOfBirth = DateField(db_column='schacDateOfBirth',
                                  format="%Y%m%d", # from_ldap format
                                  help_text=_("OID 1.3.6.1.4.1.1466.115.121.1.36"),
@@ -277,23 +295,24 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
 
     def set_schacHomeOrganizationType(self, value,
                                       country_code=settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE):
-        if settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX not in value:
-            unique_id = ':'.join((settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX,
-                                  country_code,
-                                  value))
-        if self.schacHomeOrganizationType:
-            if unique_id not in self.schacHomeOrganizationType:
-                self.schacHomeOrganizationType.append(unique_id)
-        else:
-            self.schacHomeOrganizationType = [unique_id]
+        if not self.schacHomeOrganizationType:
+            self.schacHomeOrganizationType = settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT
         self.save()
 
     def set_default_eppn(self, force=False):
-        if self.eduPersonPrincipalName and not force:
-            return self.eduPersonPrincipalName
         self.eduPersonPrincipalName = '@'.join((self.uid, settings.LDAP_BASE_DOMAIN))
-        self.save()
+        if force:
+            self.save()
         return self.eduPersonPrincipalName
+
+    def update_eduPersonScopedAffiliation(self):
+        updated = [ele for ele in self.eduPersonScopedAffiliation
+                   if '@'+settings.LDAP_BASE_DOMAIN not in ele]
+        updated.extend(['@'.join((ele, settings.LDAP_BASE_DOMAIN)) for ele in self.eduPersonAffiliation])
+        if self.eduPersonScopedAffiliation != updated:
+            self.eduPersonScopedAffiliation = updated
+            self.save()
+        return self.eduPersonScopedAffiliation
 
     def membership(self):
         if self.memberOf: return self.memberOf
@@ -354,22 +373,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
         logger.info('{} reset schacExpiryDate'.format(self.uid))
         return self.schacExpiryDate
 
-    # def save(self, *args, **kwargs):
-        # DEPRECATED
-        # for field in settings.READONLY_FIELDS:
-            # if hasattr(self, field):
-                # try:
-                    # del self.__dict__[field]
-                # except:
-                    # print('error on deletion {} readonly field'.format(field))
-
-        # check types schacDateOfBirth and schacExpiryDate before saving
-        # if entry.get('schacDateOfBirth'):
-            # entry['schacDateOfBirth'] = timezone.datetime.strptime(entry['schacDateOfBirth'],
-                                                                   # settings.SCHAC_DATEOFBIRTH_FORMAT)
-        # if entry.get('schacExpiryDate'):
-            # entry['schacExpiryDate'] = parse_generalized_time(entry['schacExpiryDate'])
-        # super().save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        """
+        Just check and update eppn
+        """
+        if not self.eduPersonPrincipalName or \
+           self.uid not in self.eduPersonPrincipalName:
+            self.set_default_eppn()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.dn

@@ -3,6 +3,8 @@
 *.pyc
 *.pyo
 
+env/*
+
 # Build-related files
 docs/_build/
 .coverage

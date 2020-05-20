@@ -132,6 +132,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                        'pwdHistory_repr',
                        'userPassword',
                        'sambaNTPassword',
+                       'eduPersonPrincipalName',
                        )
     actions = [send_reset_token_email,
                enable_account,
@@ -143,7 +144,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
     # action_form = FileImportActionForm
 
     # TODO: aggregate lookup for evaluating min max on records
-    #date_hierarchy = 'created'
+    # date_hierarchy = 'created'
 
     fieldsets = (
         (None, { 'fields' : (('uid',
@@ -155,23 +156,19 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                             ('title'),
                             ),
                 }),
+        ('Samba and Azure related', {
+            'classes': ('collapse',),
+            'fields': (
+                        ('sambaSID', 'sambaNTPassword'),
+                        ),
+                      }
+        ),
         ('Password', {
             'classes': ('collapse',),
             'fields': (
                         # ('password_encoding', 'new_passwd'),
-                        ('userPassword', 'sambaNTPassword'),
+                        ('userPassword',),
                         ('new_passwd',),
-                        ),
-                      }
-        ),
-        ('Additional info', {
-            'classes': ('collapse',),
-            'fields': (
-                        ('createTimestamp', 'creatorsName',),
-                        ('modifyTimestamp', 'modifiersName',),
-                        ('get_membership_as_ul',
-                        ## 'membership',
-                        ),
                         ),
                       }
         ),
@@ -186,10 +183,22 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                         ),
                       }
         ),
+        ('Additional info', {
+            'classes': ('collapse',),
+            'fields': (
+                        ('createTimestamp', 'creatorsName',),
+                        ('modifyTimestamp', 'modifiersName',),
+                        ('get_membership_as_ul',
+                        ## 'membership',
+                        ),
+                        ),
+                      }
+        ),
         ('Academia eduPerson', {
             ##'classes': ('collapse',),
             'fields': (
                         ('eduPersonPrincipalName', 'eduPersonOrcid',),
+                        ('eduPersonAssurance',),
                         ('eduPersonAffiliation',
                         'eduPersonScopedAffiliation',),
                         'eduPersonEntitlement',
@@ -199,11 +208,11 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         ('Academia Schac)', {
             ##'classes': ('collapse',),
             'fields': (
-                        ('schacPlaceOfBirth', 'schacDateOfBirth'),
+                        ('schacPlaceOfBirth', 'schacDateOfBirth', 'schacGender'),
                         ('schacPersonalUniqueID', 'schacPersonalUniqueCode'),
                         ('schacExpiryDate'),
-                       ('schacHomeOrganization',
-                        'schacHomeOrganizationType'),
+                        ('schacHomeOrganization',
+                         'schacHomeOrganizationType'),
                         ),
                       }
         )
@@ -236,10 +245,18 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         """
         method that trigger password encoding
         """
-        obj.save()
+        if not form.data.get('eduPersonPrincipalName'):
+            obj.set_default_eppn(force=True)
+        else:
+            obj.save()
+
+        obj.update_eduPersonScopedAffiliation()
+
         if form.data.get('new_passwd'):
             passw = form.data.get('new_passwd')
             obj.set_password(passw)
+
+
 
 
 @admin.register(LdapGroup)

@@ -175,8 +175,9 @@ class SchacPersonalUniqueIdWidget(SplitJSONWidget, forms.Widget):
         select_1_options_list = ['<option value="{}" selected>{}</option>'.format(l_value[1],
                                                                                   l_value[1]),]
 
-        fout_countries = [e for e in pycountry.countries if e != settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE ]
+        fout_countries = [e for e in pycountry.countries if e != settings.SCHAC_PERSONALUNIQUEID_DEFAULT_COUNTRYCODE]
         select_1_options_list.extend([option_1_tmpl.format(i.alpha_2, i.alpha_2) for i in fout_countries])
+        select_1_options_list.extend([option_1_tmpl.format(ele, ele) for ele in ('EU', 'INT')])
         select_1 = select_1_tmpl.format('{}_2_[{}]'.format(name, row_id), '', ''.join(select_1_options_list))
 
         select_2_tmpl = """<select name={} {}>
@@ -257,6 +258,7 @@ class SchacPersonalUniqueCodeWidget(SchacPersonalUniqueIdWidget):
 
         fout_countries = [e for e in pycountry.countries if e != settings.SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX ]
         select_1_options_list.extend([option_1_tmpl.format(i.alpha_2, i.alpha_2) for i in fout_countries])
+        select_1_options_list.extend([option_1_tmpl.format(ele, ele) for ele in ('EU', 'INT')])
         select_1 = select_1_tmpl.format('{}_2_[{}]'.format(name, row_id), '', ''.join(select_1_options_list))
 
         input_suffix = "<input style='width: 170px;' class='vTextField' value='{}' name='{}_4_[{}]'>".format(value,
@@ -299,6 +301,7 @@ class SchacHomeOrganizationTypeWidget(SchacPersonalUniqueIdWidget):
 
         fout_countries = [e for e in pycountry.countries if e != settings.SCHAC_HOMEORGANIZATIONTYPE_DEFAULT_PREFIX ]
         select_1_options_list.extend([option_1_tmpl.format(i.alpha_2, i.alpha_2) for i in fout_countries])
+        select_1_options_list.extend([option_1_tmpl.format(ele, ele) for ele in ('EU', 'INT')])
         select_1 = select_1_tmpl.format('{}_2_[{}]'.format(name, row_id), '', ''.join(select_1_options_list))
 
         input_suffix = "<input style='width: 170px;' class='vTextField' value='{}' name='{}_4_[{}]'>".format(value,

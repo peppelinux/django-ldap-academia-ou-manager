@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http.response import HttpResponse,  HttpResponseRedirect
+from django.views.decorators.http import require_http_methods
 from django.shortcuts import render
 from django.urls import reverse
 
-from .serializers import LdapImportExport
+from . models import LdapAcademiaUser
+from . serializers import LdapImportExport
 
 
 @user_passes_test(lambda u: u.is_staff)

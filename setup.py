@@ -1,4 +1,5 @@
-from setuptools import setup
+from glob import glob
+from setuptools import find_packages, setup
 
 def readme():
     with open('README.md') as f:
@@ -20,7 +21,12 @@ setup(name='django-ldap-academia-ou-manager',
       author='Giuseppe De Marco',
       author_email='giuseppe.demarco@unical.it',
       license='BSD',
-      packages=['ldap_peoples', 'ldap_peoples/templates', 'ldap_peoples/templates/filters'],
+      packages=find_packages(),
+      package_data={'': ['*.html']},
+      data_files=[
+        ('', glob('ldap_peoples/templates/*/*/*.html')),
+      ],
+      include_package_data=True,
       dependency_links=['https://github.com/peppelinux/django-ldapdb/tarball/master#egg=peppelinux_django_ldapdb-1.0',],
       install_requires=[
                       'bcrypt>=3.1.4',

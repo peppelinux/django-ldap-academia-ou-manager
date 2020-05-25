@@ -112,7 +112,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                    ('pwdChangedTime', DateTimeRangeFilter),
                    ('schacExpiryDate', DateTimeRangeFilter),
                   )
-    search_fields = ('uid',
+    search_fields = ('uid__exact',
                      #  'givenName',
                      #  'sn',
                      #  'mail', # https://github.com/django-ldapdb/django-ldapdb/issues/104

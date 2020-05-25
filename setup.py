@@ -5,7 +5,7 @@ def readme():
         return f.read()
 
 setup(name='django-ldap-academia-ou-manager',
-      version='v0.8.9',
+      version='v0.9.0',
       description=('Django Admin manager for Academia Users '
                    'with eduPerson schema and '
                    'SCHAC (SCHema for ACademia).'),

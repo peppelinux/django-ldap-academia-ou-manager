@@ -113,9 +113,9 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                    ('schacExpiryDate', DateTimeRangeFilter),
                   )
     search_fields = ('uid',
-                     'givenName',
-                     'displayName',
-                     'mail', # https://github.com/django-ldapdb/django-ldapdb/issues/104
+                     #  'givenName',
+                     #  'sn',
+                     #  'mail', # https://github.com/django-ldapdb/django-ldapdb/issues/104
                      )
     readonly_fields = (
                        'createTimestamp',

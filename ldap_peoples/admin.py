@@ -114,7 +114,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                   )
     search_fields = ('uid',
                      'givenName',
-                     'displayName',
+                     'sn',
                      'mail', # https://github.com/django-ldapdb/django-ldapdb/issues/104
                      )
     readonly_fields = (

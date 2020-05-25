@@ -9,7 +9,8 @@ class GenericSearch(admin.SimpleListFilter):
     template = 'filters/custom_search.html'
 
     def lookups(self, request, model_admin):
-        return (('mail', 'mail'),
+        return (('uid', 'uid'),
+                ('mail', 'mail'),
                 ('schacPersonalUniqueID','schacPersonalUniqueID'),
                 ('schacPersonalUniqueCode','schacPersonalUniqueCode'),
                 )

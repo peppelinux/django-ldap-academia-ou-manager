@@ -12,13 +12,15 @@ from django.utils import timezone
 from ldapdb.models.fields import (ExactLookup,
                                   GteLookup,
                                   ListContainsLookup,
-                                  IContainsLookup,
+                                  ContainsLookup,
                                   LteLookup,
                                   LdapLookup,
                                   LdapFieldMixin,
                                   TimestampField,
                                   CharField,
-                                  DateTimeField)
+                                  DateTimeField,
+                                  StartsWithLookup,
+                                  EndsWithLookup)
 from . form_fields  import (ListField as FormListField,
                             EmailListField as FormEmailListField,
                             ScopedListField as FormScopedListField)
@@ -78,6 +80,8 @@ class DateField(LdapFieldMixin, fields.DateField):
 
 
 DateField.register_lookup(ExactLookup)
+DateField.register_lookup(LteLookup)
+DateField.register_lookup(GteLookup)
 
 
 class TimeStampField(fields.DateTimeField):
@@ -161,8 +165,9 @@ class ListField(LdapFieldMixin, fields.Field):
 
 ListField.register_lookup(ListContainsLookup)
 ListField.register_lookup(ExactLookup)
-ListField.register_lookup(IContainsLookup)
-
+ListField.register_lookup(ContainsLookup)
+ListField.register_lookup(EndsWithLookup)
+ListField.register_lookup(StartsWithLookup)
 
 class TitleField(ListField):
     binary_field = False
@@ -180,7 +185,7 @@ class TitleField(ListField):
 
 TitleField.register_lookup(ListContainsLookup)
 TitleField.register_lookup(ExactLookup)
-TitleField.register_lookup(IContainsLookup)
+TitleField.register_lookup(ContainsLookup)
 
 
 class EmailListField(ListField):
@@ -199,8 +204,9 @@ class EmailListField(ListField):
 
 EmailListField.register_lookup(ListContainsLookup)
 EmailListField.register_lookup(ExactLookup)
-EmailListField.register_lookup(IContainsLookup)
-
+EmailListField.register_lookup(ContainsLookup)
+EmailListField.register_lookup(StartsWithLookup)
+EmailListField.register_lookup(EndsWithLookup)
 
 class ScopedListField(ListField):
     pass
@@ -218,7 +224,9 @@ class ScopedListField(ListField):
 
 ScopedListField.register_lookup(ListContainsLookup)
 ScopedListField.register_lookup(ExactLookup)
-ScopedListField.register_lookup(IContainsLookup)
+ScopedListField.register_lookup(ContainsLookup)
+ScopedListField.register_lookup(StartsWithLookup)
+ScopedListField.register_lookup(EndsWithLookup)
 
 
 class SchacPersonalUniqueIdListField(ListField):
@@ -235,7 +243,9 @@ class SchacPersonalUniqueIdListField(ListField):
 
 SchacPersonalUniqueIdListField.register_lookup(ListContainsLookup)
 SchacPersonalUniqueIdListField.register_lookup(ExactLookup)
-SchacPersonalUniqueIdListField.register_lookup(IContainsLookup)
+SchacPersonalUniqueIdListField.register_lookup(ContainsLookup)
+SchacPersonalUniqueIdListField.register_lookup(StartsWithLookup)
+SchacPersonalUniqueIdListField.register_lookup(EndsWithLookup)
 
 
 class SchacPersonalUniqueCodeListField(ListField):
@@ -252,7 +262,9 @@ class SchacPersonalUniqueCodeListField(ListField):
 
 SchacPersonalUniqueCodeListField.register_lookup(ListContainsLookup)
 SchacPersonalUniqueCodeListField.register_lookup(ExactLookup)
-SchacPersonalUniqueCodeListField.register_lookup(IContainsLookup)
+SchacPersonalUniqueCodeListField.register_lookup(ContainsLookup)
+SchacPersonalUniqueCodeListField.register_lookup(StartsWithLookup)
+SchacPersonalUniqueCodeListField.register_lookup(EndsWithLookup)
 
 
 class SchacHomeOrganizationTypeListField(ListField):
@@ -269,7 +281,9 @@ class SchacHomeOrganizationTypeListField(ListField):
 
 SchacHomeOrganizationTypeListField.register_lookup(ListContainsLookup)
 SchacHomeOrganizationTypeListField.register_lookup(ExactLookup)
-SchacHomeOrganizationTypeListField.register_lookup(IContainsLookup)
+SchacHomeOrganizationTypeListField.register_lookup(ContainsLookup)
+SchacHomeOrganizationTypeListField.register_lookup(StartsWithLookup)
+SchacHomeOrganizationTypeListField.register_lookup(EndsWithLookup)
 
 
 class eduPersonAffiliationListField(ListField):
@@ -286,7 +300,7 @@ class eduPersonAffiliationListField(ListField):
 
 eduPersonAffiliationListField.register_lookup(ListContainsLookup)
 eduPersonAffiliationListField.register_lookup(ExactLookup)
-eduPersonAffiliationListField.register_lookup(IContainsLookup)
+eduPersonAffiliationListField.register_lookup(ContainsLookup)
 
 
 class eduPersonScopedAffiliationListField(ListField):
@@ -303,7 +317,7 @@ class eduPersonScopedAffiliationListField(ListField):
 
 eduPersonScopedAffiliationListField.register_lookup(ListContainsLookup)
 eduPersonScopedAffiliationListField.register_lookup(ExactLookup)
-eduPersonScopedAffiliationListField.register_lookup(IContainsLookup)
+eduPersonScopedAffiliationListField.register_lookup(ContainsLookup)
 
 
 class MultiValueField(LdapFieldMixin, fields.TextField):
@@ -343,7 +357,7 @@ class MultiValueField(LdapFieldMixin, fields.TextField):
 
 
 MultiValueField.register_lookup(ListContainsLookup)
-MultiValueField.register_lookup(IContainsLookup)
+MultiValueField.register_lookup(ContainsLookup)
 
 
 class AbstractTimeStampLookup(LdapLookup):

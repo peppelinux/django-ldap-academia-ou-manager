@@ -52,9 +52,10 @@ class LdapAcademiaAuthBackend(ModelBackend):
             # user = get_user_model().objects.get(username=scoped_username)
             user = get_user_model().objects.get(username=lu.uid)
             # update attrs:
-            if user.email != lu.mail[0]:
-                user.email = lu.mail[0]
-                user.save()
+            if lu.mail:
+                if user.email != lu.mail[0]:
+                    user.email = lu.mail[0]
+                    user.save()
         except Exception as e:
             user = get_user_model().objects.create(dn=lu.dn,
                                                    #username=scoped_username,

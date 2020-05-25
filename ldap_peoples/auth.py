@@ -60,9 +60,11 @@ class LdapAcademiaAuthBackend(ModelBackend):
             user = get_user_model().objects.create(dn=lu.dn,
                                                    #username=scoped_username,
                                                    username = lu.uid,
-                                                   email=lu.mail[0],
                                                    first_name=lu.cn,
                                                    last_name=lu.sn)
+            is lu.mail:
+                user.email = lu.mail[0]
+                user.save()
 
         # disconnect already created session, only a session per user is allowed
         # get all the active sessions

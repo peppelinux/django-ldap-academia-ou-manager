@@ -11,6 +11,7 @@ class GenericSearch(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         return (('uid', 'uid'),
                 ('mail', 'mail'),
+                ('sn', 'sn'),
                 ('schacPersonalUniqueID','schacPersonalUniqueID'),
                 ('schacPersonalUniqueCode','schacPersonalUniqueCode'),
                 )

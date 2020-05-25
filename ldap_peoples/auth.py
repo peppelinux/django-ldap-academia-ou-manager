@@ -62,7 +62,7 @@ class LdapAcademiaAuthBackend(ModelBackend):
                                                    username = lu.uid,
                                                    first_name=lu.cn,
                                                    last_name=lu.sn)
-            is lu.mail:
+            if lu.mail:
                 user.email = lu.mail[0]
                 user.save()
 

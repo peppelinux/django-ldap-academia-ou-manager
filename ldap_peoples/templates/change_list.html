@@ -1,0 +1,73 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+{% load static %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        .toggable {
+                    padding: 8px 10px;
+                    margin-bottom: 15px;
+                    border-top: 1px solid #eee;
+                    border-bottom: 1px solid #eee;
+                    background: #f8f8f8;
+                    color: #666;
+                    margin-right: 280px;
+                    width: auto;
+                    }
+
+        .file_submit {
+                        border: 3px solid #ccc !important;
+                        padding: 2px 10px;
+                        margin: 0;
+                        vertical-align: middle;
+                        background: #fff;
+                        box-shadow: 0 -15px 20px -10px rgba(0, 0, 0, 0.15) inset;
+                        cursor: pointer;
+                        color: #333;
+                     }
+    </style>
+{% endblock %}
+
+{% block object-tools-items %}
+<!--
+    <li>
+        <a href="mylink/" class="historylink">{% trans "Import Entries" %}</a>
+    </li>
+-->
+    {{ block.super }}
+    {% if has_absolute_url %}
+        <li>
+            <a href="{% url 'admin:view_on_site' content_type_id original.pk %}" class="viewsitelink">{% trans "View on site" %}</a>
+        </li>
+    {% endif %}
+{% endblock %}
+
+{% block search %}
+{{ block.super }}
+<div>
+    <h2 id="import_h" style="">{% trans "Import form" %}</h2>
+    <div class="toggable">
+        <form action="{% url 'ldap_peoples:import_file' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+<!--
+            <label for="import_file">
+                <img src="{% static "admin/img/icon-addlink.svg" %}" alt="{% trans "Import Entries" %}">
+            </label>
+-->
+            <label for="import_file">{% trans "File to import" %}:
+                <input type="file" name="file_to_import">
+            </label>
+
+            <label>{% trans "file format" %}:
+                <select name="file_format" required="">
+                  <option value="json">JSON</option>
+                  <option value="ldif">LDIF</option>
+                </select>
+            </label>
+
+            <input type="submit" class="file_submit" value="{% trans 'Import in LDAP' %}">
+        </form>
+    </div>
+</div>
+{% endblock %}

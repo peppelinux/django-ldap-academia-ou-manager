@@ -1,11 +1,12 @@
-from setuptools import setup
+from glob import glob
+from setuptools import find_packages, setup
 
 def readme():
     with open('README.md') as f:
         return f.read()
 
 setup(name='django-ldap-academia-ou-manager',
-      version='v0.8.9',
+      version='v0.9.0',
       description=('Django Admin manager for Academia Users '
                    'with eduPerson schema and '
                    'SCHAC (SCHema for ACademia).'),
@@ -20,7 +21,12 @@ setup(name='django-ldap-academia-ou-manager',
       author='Giuseppe De Marco',
       author_email='giuseppe.demarco@unical.it',
       license='BSD',
-      packages=['ldap_peoples'],
+      packages=find_packages(),
+      package_data={'': ['*.html']},
+      data_files=[
+        ('', glob('ldap_peoples/templates/*/*/*.html')),
+      ],
+      include_package_data=True,
       dependency_links=['https://github.com/peppelinux/django-ldapdb/tarball/master#egg=peppelinux_django_ldapdb-1.0',],
       install_requires=[
                       'bcrypt>=3.1.4',

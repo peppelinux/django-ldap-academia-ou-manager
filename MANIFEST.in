@@ -1,0 +1,6 @@
+include AUTHORS
+include LICENSE
+include README.md
+include ldap_peoples/static/js/*
+include ldap_peoples/templates/*
+include ldap_peoples/templates/filters/*

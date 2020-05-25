@@ -8,7 +8,7 @@ from django.utils.html import mark_safe
 from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
 
 from .admin_actions import *
-from .admin_filters import TitleListFilter, AffiliationListFilter
+from .admin_filters import TitleListFilter, AffiliationListFilter, GenericSearch
 from .admin_utils import (get_values_as_html_ul,)
 from .forms import (LdapAcademiaUserAdminForm,
                     LdapGroupAdminMultiValuedForm) #, FileImportActionForm
@@ -103,7 +103,8 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                     # 'get_membership_as_ul',
                     'createTimestamp',
                     'modifyTimestamp')
-    list_filter = (AffiliationListFilter,
+    list_filter = (GenericSearch,
+                   AffiliationListFilter,
                    TitleListFilter,
                    # 'pwdChangedTime', 'created', 'modified',
                    ('createTimestamp', DateRangeFilter),
@@ -113,7 +114,7 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
                   )
     search_fields = ('uid',
                      'givenName',
-                     'displayName',
+                     'sn',
                      'mail', # https://github.com/django-ldapdb/django-ldapdb/issues/104
                      )
     readonly_fields = (
@@ -245,18 +246,16 @@ class LdapAcademiaUserAdmin(LdapDbModelAdmin):
         """
         method that trigger password encoding
         """
-        if not form.data.get('eduPersonPrincipalName'):
-            obj.set_default_eppn(force=True)
-        else:
-            obj.save()
-
+        obj.set_default_schacHomeOrganization()
+        obj.set_default_schacHomeOrganizationType()
         obj.update_eduPersonScopedAffiliation()
+        if not form.data.get('eduPersonPrincipalName'):
+            obj.set_default_eppn()
+        obj.save()
 
         if form.data.get('new_passwd'):
             passw = form.data.get('new_passwd')
             obj.set_password(passw)
-
-
 
 
 @admin.register(LdapGroup)

@@ -35,7 +35,7 @@ class LdapImportExport(object):
         """
         out = io.StringIO()
         if isinstance(entry, dict):
-            out.write(json.dumps(entry, indent=2))
+            out.write(json.dumps(entry))
             out.write('\n')
             out.seek(0)
             return out.read()

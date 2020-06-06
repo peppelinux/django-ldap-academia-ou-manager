@@ -14,7 +14,7 @@ d = {'cn': 'pedppe',
      'sambaNTPassword': 'a2137530237ad733fdc26d5d7157d43f',
      'schacHomeOrganization': 'testunical.it',
      'schacHomeOrganizationType': ['educationInstitution', 'university'],
-     'schacPersonalUniqueID': ['urn:schac:personalUniqueID:IT:CF:CODICEFISCALEpe3245ppe'],
+     'schacPersonalUniqueID': ['urn:schac:personalUniqueID:it:CF:CODICEFISCALEpe3245ppe'],
      'schacPlaceOfBirth': '',
      'sn': 'grossi',
      'telephoneNumber': [],
@@ -27,5 +27,5 @@ u.delete()
 
 entry = {'givenName': 'Giuseppe', 'cn': 'Giuseppe', 'sn': 'De Marco', 'schacPlaceOfBirth': 'IT,Cosenza',
 'schacDateOfBirth': datetime.date(1983, 8, 27), 'displayName': 'Giuseppe De Marco',
-'mail': ['ingoalla@testunical.it'], 'telephoneNumber': ['0984496945'], 'uid': 'peppelinux27', 'schacHomeOrganization': 'testunical.it'} 
+'mail': ['ingoalla@testunical.it'], 'telephoneNumber': ['0984496945'], 'uid': 'peppelinux27', 'schacHomeOrganization': 'testunical.it'}
 u = LdapAcademiaUser.objects.create(**entry)

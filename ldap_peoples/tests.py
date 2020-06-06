@@ -45,10 +45,10 @@ def get_test_guy():
                   ],
                   "schacHomeOrganization": "testunical.it",
                   "schacHomeOrganizationType": [
-                    "urn:schac:homeOrganizationType:IT:university"
+                    "urn:schac:homeOrganizationType:it:university"
                   ],
                   "schacPersonalUniqueID": [
-                    "urn:schac:personalUniqueID:IT:CF:{}".format(_test_uid)
+                    "urn:schac:personalUniqueID:it:CF:{}".format(_test_uid)
                   ],
                   "schacDateOfBirth": "20190213",
                   "schacExpiryDate": (timezone.localtime()+datetime.timedelta(minutes=60)).strftime(LDAP_DATETIME_FORMAT),

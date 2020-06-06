@@ -1,4 +1,4 @@
-django>=2.2.9,<3.0
+django>=3.0.5,<4
 bcrypt
 # nt hashing dep
 passlib

@@ -70,7 +70,7 @@ EPPN_VALIDATOR = '[a-zA-Z\.\_\:\-0-9]+@[a-zA-Z\-\.\_]+'
 EDUPERSON_ASSURANCES = (('https://refeds.org/assurance/IAP/low', 'low'),
                         ('https://refeds.org/assurance/IAP/medium', 'medium'),
                         ('https://refeds.org/assurance/IAP/high', 'high'),)
-EDUPERSON_DEFAULT_ASSURANCE = 'https://refeds.org/assurance/IAP/medium'
+EDUPERSON_DEFAULT_ASSURANCE = 'https://refeds.org/assurance/IAP/low'
 
 # https://www.internet2.edu/products-services/trust-identity/mace-registries/urnmace-namespace/
 SCHAC_PERSONALUNIQUECODE_DEFAULT_PREFIX = 'urn:schac:personalUniqueCode'

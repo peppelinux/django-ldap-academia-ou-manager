@@ -1,10 +1,11 @@
-# This repository adheres to the publiccode.yml standard by including this 
+# This repository adheres to the publiccode.yml standard by including this
 # metadata file that makes public software easily discoverable.
 # More info at https://github.com/italia/publiccode.yml
 
 publiccodeYmlVersion: '0.2'
 name: django-ldap-academia-ou-manager
-releaseDate: '2019-02-18'
+releaseDate: '2019-02-19'
+softwareVersion: v0.8.2
 url: 'https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager'
 developmentStatus: stable
 landingURL: 'https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager'
@@ -85,6 +86,8 @@ description:
     features:
       - LDAP manager
     screenshots:
+      - >-
+        https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager/blob/master/img/django-academia-ou-manager.png
       - >-
         https://github.com/UniversitaDellaCalabria/django-ldap-academia-ou-manager/blob/master/img/preview.png
       - >-

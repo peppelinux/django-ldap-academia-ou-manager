@@ -1,6 +1,22 @@
 CHANGELOG
 ---------
 
+v0.9.2
+------
+
+- fixed get_membership on user add
+- Added schac Gender
+- no more default entitlements on user creation
+- idem affiliation mapping fix
+- set_default_schacExpiryDate coherent with pwdChangedTime
+- schac personal uniqueID nation lowercased by default
+- removed indent in json dumps
+- search filter lookup fixed
+- advanced admin search filter builder
+- admin uid search __exact
+- IAP/low as default LoA
+
+
 v0.8.9
 ------
 

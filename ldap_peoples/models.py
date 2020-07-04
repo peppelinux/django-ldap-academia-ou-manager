@@ -331,10 +331,14 @@ class LdapAcademiaUser(ldapdb.models.Model, LdapSerializer):
     def membership(self):
         if self.memberOf: return self.memberOf
         # memberOf fill fields in people entries only if a change/write happens in its definitions
-        membership = LdapGroup.objects.filter(member__contains=self.dn)
-        if membership:
-            # return os.linesep.join([m.dn for m in membership])
-            return [i.cn for i in membership]
+        try:
+            membership = LdapGroup.objects.filter(member__contains=self.dn)
+            if membership:
+                # return os.linesep.join([m.dn for m in membership])
+                return [i.cn for i in membership]
+        except ldap.FILTER_ERROR as e:
+            logger.warn('No membership found: {}'.format(e))
+            return []
 
     def check_pwdHistory(self, password):
         """

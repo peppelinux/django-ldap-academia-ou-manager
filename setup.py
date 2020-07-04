@@ -6,7 +6,7 @@ def readme():
         return f.read()
 
 setup(name='django-ldap-academia-ou-manager',
-      version='v0.9.0',
+      version='v0.9.2',
       description=('Django Admin manager for Academia Users '
                    'with eduPerson schema and '
                    'SCHAC (SCHema for ACademia).'),
@@ -30,7 +30,7 @@ setup(name='django-ldap-academia-ou-manager',
       dependency_links=['https://github.com/peppelinux/django-ldapdb/tarball/master#egg=peppelinux_django_ldapdb-1.0',],
       install_requires=[
                       'bcrypt>=3.1.4',
-                      'Django>=2.0.7',
+                      'Django>3,<4',
                       'django-admin-rangefilter>=0.3.9',
                       'passlib>=1.7.1',
                       'chardet',

@@ -10,6 +10,8 @@ git+https://github.com/peppelinux/python-ldap.git
 git+https://github.com/peppelinux/django-ldapdb.git
 git+https://github.com/peppelinux/pySSHA-slapd.git
 
+ldap3
+
 # rangefilter
 git+https://github.com/silentsokolov/django-admin-rangefilter.git
 

@@ -1,4 +1,5 @@
 import ldap
+from ldap3.utils import conv
 import logging
 
 
@@ -30,6 +31,7 @@ class LdapAcademiaAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None):
         ldap_conn = connections['ldap']
         user = None
+        username = conv.escape_filter_chars(username, encoding=None)
         lu = LdapAcademiaUser.objects.filter(uid=username).first()
         if not lu:
             return None

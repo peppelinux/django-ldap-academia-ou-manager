@@ -49,7 +49,7 @@ pip3 install virtualenv
 export PROJ_NAME=django-ldap-academia-ou-manager
 export DEST_DIR=$PROJ_NAME.env
 virtualenv -p python3 $DEST_DIR
-source $dest_dir/bin/activate
+source $DEST_DIR/bin/activate
 pip3 install django
 ````
 
